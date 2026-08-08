@@ -27,7 +27,7 @@
 # skill-rewrites.toml.
 
 # Hand-maintained here, never fetched and never pruned.
-local = ["1password", "claude-history", "leo-bot", "python-knowledge-patch"]
+local = ["1password", "claude-history", "leo-auto", "leo-bot", "python-knowledge-patch"]
 
 [[source]]
 repository = "https://github.com/vercel-labs/skills"

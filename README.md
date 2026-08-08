@@ -29,7 +29,7 @@ skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
 
 Skills declared in [`upstream-skills.toml`](./upstream-skills.toml) are
 fetched with the skills.sh CLI. Skills listed there under `local`
-(`1password`, `claude-history`, `leo-bot`, `python-knowledge-patch`) are
+(`1password`, `claude-history`, `leo-auto`, `leo-bot`, `python-knowledge-patch`) are
 maintained by hand and the fetcher leaves them alone.
 
 `leo-bot` is the router across the vendored packs: it prefers a project's
@@ -37,7 +37,9 @@ own OpenSpec skills when an `openspec/` directory is present, routes
 mission-critical work to `sbp-*`, and otherwise asks you to pick exactly one
 of `mp-*`, `ao-*`, or `s-*` — each pack's own router (`mp-ask-leo`,
 `ao-using-agent-skills`, `s-using-superpowers`) still covers routing within
-that pack.
+that pack. `leo-auto` is the finishing move it points to once code changes
+exist: quality gates, commit, push, and CI verification via `gh`, `glab`, or
+plain `git` depending on the remote.
 
 ```bash
 mise run skills-install    # fetch only what is missing
@@ -133,7 +135,7 @@ table mirrors them.
 | `s-*` | [lsimons/superpowers](https://github.com/lsimons/superpowers) | Copyright (c) 2025 Jesse Vincent |
 | `memex-*` | [nicosuave/memex](https://github.com/nicosuave/memex) | Copyright (c) 2026 Nico Ritschel |
 | `vercel-find-skills`, `vercel-web-design-guidelines` | [vercel-labs](https://github.com/vercel-labs) | Copyright (c) 2026 Vercel, Inc. |
-| `1password`, `claude-history`, `python-knowledge-patch` | hand-maintained here | Copyright (c) 2026 Leo Simons |
+| `1password`, `claude-history`, `leo-auto`, `python-knowledge-patch` | hand-maintained here | Copyright (c) 2026 Leo Simons |
 
 Upstream copyright holders are collected in [LICENSE](./LICENSE).
 

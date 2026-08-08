@@ -214,3 +214,12 @@ Two exceptions to "stay in one pack":
 Everything outside these four packs — `1password`, `claude-history`,
 `memex-*`, `python-knowledge-patch`, `vercel-*`, `an-frontend-design` — is a
 tool or reference, not a process, and composes with any lane.
+
+## Finishing a task
+
+Once code changes exist and the remaining work is mechanical — quality
+gates, commit, push, watch CI — use `leo-auto` regardless of lane. It picks
+`gh`, `glab`, or plain `git` based on the remote URL and drives to a pushed,
+green-CI state without a check-in per step. It's not a plan runner; for
+running a whole multi-task plan hands-off after one approval, that's still
+`ao-autonomous-plan-execution`.
