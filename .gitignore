@@ -75,3 +75,6 @@ ehthumbs.db
 
 # Claude
 .claude/settings.local.json
+
+# Proprietary Schuberg Philis content — never vendorable, see README "Not vendored"
+skills/sbp-brandbook/
