@@ -12,6 +12,10 @@ authors = [
 [tool.ruff]
 line-length = 100
 target-version = "py314"
+# skills/ is vendored upstream content. ruff formats Python code blocks inside
+# markdown, so without this it rewrites other people's skills — which makes
+# `skills-update` produce spurious diffs and `lint` fail on a fresh fetch.
+exclude = ["skills"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
