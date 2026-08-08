@@ -2,6 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(mise run install)",
+      "Bash(mise run skills-update)",
+      "Bash(mise run skills-install)",
       "Bash(mise run lint)",
       "Bash(mise run format)",
       "Bash(mise run typecheck)",
@@ -9,6 +11,8 @@
       "Bash(mise run ci)",
       "Bash(mise run ci-watch)",
       "Bash(mise run install *)",
+      "Bash(mise run skills-update *)",
+      "Bash(mise run skills-install *)",
       "Bash(mise run lint *)",
       "Bash(mise run format *)",
       "Bash(mise run typecheck *)",

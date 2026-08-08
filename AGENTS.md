@@ -2,7 +2,12 @@
 
 > This file (`AGENTS.md`) is the canonical agent configuration. `CLAUDE.md` is a symlink to this file.
 
-A collection of agent skills: Markdown skill definitions plus their supporting Python scripts.
+The single source of truth for my agent skills: Markdown skill definitions under
+`skills/`, plus the Python tooling that maintains them.
+
+This repository does **not** configure or install any specific coding agent.
+It only maintains `skills/`; consumers (the `lsimons-dotfiles` agent topics)
+link that directory into each agent's config.
 
 ## Quick Reference
 
@@ -13,18 +18,32 @@ A collection of agent skills: Markdown skill definitions plus their supporting P
 - **Typecheck**: `mise run typecheck` (or `uv run basedpyright`)
 - **Format**: `mise run format` (or `uv run ruff format . && uv run ruff check --fix .`)
 - **Full CI gate**: `mise run ci`
+- **Fetch missing skills**: `mise run skills-install`
+- **Re-fetch all skills**: `mise run skills-update`
 
 ## Structure
 
 ```
-skills/            # Skill definitions (Markdown)
-skills/scripts/    # Python scripts backing the skills
-tests/             # Tests for skills/scripts/*.py
+skills/               # Skill definitions, one directory per skill
+scripts/              # Python tooling that maintains skills/
+tests/                # Tests for scripts/
+upstream-skills.txt   # Manifest of skills fetched from skills.sh
 ```
 
 There is no installable Python package (`tool.uv.package = false`) —
-`skills/scripts` is imported directly via `pythonpath = ["."]` in
-pytest config.
+`scripts` is imported directly via `pythonpath = ["."]` in pytest config,
+so run the tooling as a module from the repository root:
+`uv run python -m scripts.update_skills`.
+
+## Skills
+
+Everything under `skills/` is committed, including skills fetched from
+skills.sh. `upstream-skills.txt` declares what is fetched; skills absent from
+that manifest (`1password`, `claude-history`, `python-knowledge-patch`) are
+maintained by hand here and the fetcher leaves them alone.
+
+When editing a fetched skill, remember the next `mise run skills-update` will
+overwrite it — upstream the change or move the skill out of the manifest.
 
 ## Guidelines
 

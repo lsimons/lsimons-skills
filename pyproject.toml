@@ -19,7 +19,7 @@ select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 [tool.basedpyright]
 pythonVersion = "3.14"
 typeCheckingMode = "strict"
-include = ["scripts", "skills", "tests"]
+include = ["scripts", "tests"]
 exclude = [".venv/**", "**/__pycache__/**"]
 
 [dependency-groups]
@@ -33,7 +33,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
-addopts = "-v --cov=skills.scripts --cov-report=term-missing --cov-fail-under=80"
+addopts = "-v --cov=scripts --cov-report=term-missing --cov-fail-under=80"
 
 [tool.uv]
 package = false
