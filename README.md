@@ -65,6 +65,17 @@ declares a prefix, and every skill it provides is vendored under it:
 A name that already carries its prefix keeps it, so `sbp-threat-model` and
 `memex-search` are not double-prefixed.
 
+### Compatibility with OpenSpec
+
+This repo is compatible with [OpenSpec](https://github.com/Fission-AI/OpenSpec):
+running `openspec init` in a project installs its own project-local skills and
+`/opsx:*` slash commands alongside whatever is wired in from here, with no
+conflicts. Projects that use both should note the preference in their own
+`CLAUDE.md`/`AGENTS.md` — e.g. prefer OpenSpec's `/opsx:*` workflow over
+`ao-spec-driven-development` when an `openspec/` directory is present — since
+both are model-invocable on similar trigger language and this repo has no way
+to know which projects consume it alongside OpenSpec.
+
 ### Adding or re-prefixing a source
 
 `mise run skills-update` does the deterministic half — fetch, rename the
