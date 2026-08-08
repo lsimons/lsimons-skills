@@ -28,7 +28,8 @@ whatever consumes this repository.
 skills/                # Skill definitions, one directory per skill
 scripts/               # Python tooling that maintains skills/
 tests/                 # Tests for scripts/
-upstream-skills.toml   # Which skills to fetch, and what to call them here
+upstream-skills.toml   # Which skills to fetch, what to call them here, and
+                       # which frontmatter fields to override
 skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
 ```
 
@@ -63,6 +64,35 @@ prefixes: `ao-` (Addy Osmani), `mp-` (Matt Pocock), `s-` (superpowers),
 each skill, installs it under its local name, and rewrites the `name:`
 frontmatter field to match. **Renaming skills is not otherwise a job to do by
 hand — drive it through the workflow below.**
+
+### Frontmatter overrides
+
+A `[source.frontmatter]` table in `upstream-skills.toml`, keyed by upstream
+skill name, sets fields in a fetched skill's YAML header after the fetch:
+
+```toml
+[source.frontmatter]
+using-agent-skills = { disable-model-invocation = true }
+```
+
+It exists for `disable-model-invocation`, which decides whether an agent can
+fire a skill by itself or only a human typing its name can. The criterion is
+`skills/mp-writing-for-agents/SKILL-MECHANICS.md`: model-invocation is for
+skills the agent must reach on its own, or that another skill must reach.
+A model-invoked skill's `description` is loaded into every session's context
+forever, so the flag is also how context is reclaimed. Only Matt Pocock's pack
+sets it upstream; every other pack ships everything model-invocable, and the
+overrides here are our own judgement about routers (`using-agent-skills`,
+`using-superpowers`, `find-skills` — their targets carry descriptions of their
+own) and about blast radius (`autonomous-plan-execution` runs a whole plan
+hands-off).
+
+This is structured data, so it does not belong in `skill-rewrites.toml` —
+that file is for prose. `name:` cannot be overridden; the fetcher owns it.
+Values are strings or booleans, and a field whose value spans multiple lines
+is refused rather than mangled. A test asserts the committed `skills/` tree
+matches every declared override, so declaring one without re-fetching fails
+CI.
 
 ### Workflow: adding or re-prefixing a source
 

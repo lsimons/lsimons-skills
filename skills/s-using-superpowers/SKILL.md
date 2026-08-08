@@ -1,6 +1,7 @@
 ---
 name: s-using-superpowers
 description: Discovers and invokes Superpowers skills. Use when starting a task that might match a process skill (design, debugging, planning, review, verification) — this is the meta-skill that governs how the rest of this pack is discovered and invoked.
+disable-model-invocation: true
 ---
 
 # Using Superpowers

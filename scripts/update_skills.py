@@ -8,8 +8,9 @@ shows up as a reviewable git diff. Skills declared under `local` in the
 manifest are maintained by hand here and left untouched.
 
 This script does the deterministic half of vendoring: fetch, rename the
-directory and the `name:` frontmatter field, replay `skill-rewrites.toml`,
-then report every surviving reference to a renamed skill's upstream name.
+directory and the `name:` frontmatter field, apply the manifest's other
+declared frontmatter overrides, replay `skill-rewrites.toml`, then report
+every surviving reference to a renamed skill's upstream name.
 Triaging that report is an agent's job, described in AGENTS.md.
 
 This script only maintains `skills/`. Wiring that directory into a
@@ -18,13 +19,13 @@ this repository (e.g. the dotfiles agent topics).
 """
 
 import argparse
-import re
 import shutil
 import sys
 import tempfile
 from pathlib import Path
 
 from scripts.console import dry, error, info, success, warn
+from scripts.frontmatter import FrontmatterError, apply_fields, render, set_field
 from scripts.manifest import Manifest, SkillEntry, load_manifest
 from scripts.paths import SKILLS_DIR
 from scripts.references import Reference, group_by_skill, scan_references
@@ -88,29 +89,43 @@ def install_agent_browser(*, dry_run: bool = False) -> None:
 
 
 def rename_frontmatter(skill_md: Path, local_name: str) -> bool:
-    """Set the `name:` frontmatter field to `local_name`. Returns True if changed.
+    """Set the `name:` frontmatter field to `local_name`. Returns True on success.
 
     Agents match a skill's directory against its declared name, so a renamed
     directory with an upstream `name:` is a broken skill, not a cosmetic flaw.
+    A `SKILL.md` with no `name:` at all is broken too, so it is an error
+    rather than something to fill in.
     """
     if not skill_md.is_file():
         error(f"{skill_md} does not exist; cannot rename its frontmatter")
         return False
 
     text = skill_md.read_text()
-    updated, count = re.subn(
-        r"^name:.*$",
-        f"name: {local_name}",
-        text,
-        count=1,
-        flags=re.MULTILINE,
-    )
-    if count == 0:
-        error(f"{skill_md} has no 'name:' frontmatter field")
+    try:
+        updated = set_field(text, "name", local_name, require_existing=True)
+    except FrontmatterError as exc:
+        error(f"{skill_md}: {exc}")
         return False
-    if updated == text:
+
+    if updated != text:
+        skill_md.write_text(updated)
+    return True
+
+
+def override_frontmatter(skill_md: Path, entry: SkillEntry) -> bool:
+    """Apply the manifest's frontmatter overrides for `entry`. True on success."""
+    fields = entry.frontmatter_fields
+    if not fields:
+        return True
+
+    try:
+        apply_fields(skill_md, fields)
+    except FrontmatterError as exc:
+        error(str(exc))
         return False
-    skill_md.write_text(updated)
+
+    declared = ", ".join(f"{key}: {render(value)}" for key, value in fields.items())
+    info(f"  frontmatter: {declared}")
     return True
 
 
@@ -144,7 +159,10 @@ def fetch_skill(entry: SkillEntry, staging: Path, rules: RewriteRules) -> bool:
         shutil.rmtree(destination)
     shutil.move(str(fetched), str(destination))
 
-    if entry.renamed and not rename_frontmatter(destination / "SKILL.md", entry.local_name):
+    skill_md = destination / "SKILL.md"
+    if entry.renamed and not rename_frontmatter(skill_md, entry.local_name):
+        return False
+    if not override_frontmatter(skill_md, entry):
         return False
 
     result = apply_rewrites(entry.local_name, destination, rules)

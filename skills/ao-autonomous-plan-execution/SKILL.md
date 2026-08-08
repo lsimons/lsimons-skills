@@ -1,6 +1,7 @@
 ---
 name: ao-autonomous-plan-execution
 description: Executes an entire task plan hands-off after a single approval. Use when the user asks to build, implement, or run "the whole plan," "all tasks," or "autonomously" / "auto" once a plan already exists. Not for implementing one task at a time — use ao-incremental-implementation and ao-test-driven-development directly for that.
+disable-model-invocation: true
 ---
 
 # Autonomous Plan Execution

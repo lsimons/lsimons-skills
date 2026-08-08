@@ -11,8 +11,14 @@
 #               unless the upstream name already starts with it
 #   rename      per-skill override, winning over `prefix`
 #   skills      upstream skill names to fetch
+#   frontmatter per-skill YAML frontmatter overrides, applied after the fetch
 #   license     upstream license; see the Licensing section of README.md
 #   copyright   upstream copyright holder(s); mirrored into LICENSE
+#
+# `frontmatter` is keyed by upstream skill name, and exists for
+# `disable-model-invocation`: whether an agent can fire a skill by itself is a
+# vendoring decision, and upstream packs other than Matt Pocock's never make
+# it. See AGENTS.md for when to set it.
 #
 # Prefixes exist because skill names are a flat global namespace and packs
 # collide: superpowers and osmani-agent-skills both ship a
@@ -29,6 +35,11 @@ prefix = "vercel-"
 license = "MIT"
 copyright = "Copyright (c) 2026 Vercel, Inc."
 skills = ["find-skills"]
+
+# A router over skills that are not installed, triggering on anything shaped
+# like "how do I do X" — too loose for something that installs code.
+[source.frontmatter]
+find-skills = { disable-model-invocation = true }
 
 [[source]]
 repository = "https://github.com/vercel-labs/agent-browser"
@@ -96,6 +107,15 @@ skills = [
   "using-agent-skills",
 ]
 
+# `using-agent-skills` routes to skills that already carry descriptions of
+# their own, so its always-loaded description is duplicated context; the
+# phase-to-skill index also lives in the global CLAUDE.md.
+# `autonomous-plan-execution` runs a whole plan hands-off after one approval —
+# the widest blast radius here, and a decision to make by hand.
+[source.frontmatter]
+using-agent-skills = { disable-model-invocation = true }
+autonomous-plan-execution = { disable-model-invocation = true }
+
 # Fork of Matt Pocock's skills collection.
 [[source]]
 repository = "https://github.com/lsimons/pocock-skills"
@@ -152,6 +172,11 @@ skills = [
   "writing-plans",
   "writing-skills",
 ]
+
+# Same argument as `using-agent-skills`: a router over already-discoverable
+# skills.
+[source.frontmatter]
+using-superpowers = { disable-model-invocation = true }
 
 # Schuberg Philis engineering skills. Most already carry the prefix; the
 # three that do not gain it.

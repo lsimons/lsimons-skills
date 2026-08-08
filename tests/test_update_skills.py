@@ -152,7 +152,34 @@ def test_rename_frontmatter_is_idempotent(tmp_path: Path) -> None:
     skill_md = tmp_path / "SKILL.md"
     skill_md.write_text("---\nname: x-old\n---\n")
 
-    assert not update_skills.rename_frontmatter(skill_md, "x-old")
+    assert update_skills.rename_frontmatter(skill_md, "x-old")
+    assert skill_md.read_text() == "---\nname: x-old\n---\n"
+
+
+def test_override_frontmatter_applies_declared_fields(tmp_path: Path) -> None:
+    skill_md = tmp_path / "SKILL.md"
+    skill_md.write_text("---\nname: demo-skill\n---\n\nbody\n")
+    entry = ENTRY._replace(frontmatter=(("disable-model-invocation", True),))
+
+    assert update_skills.override_frontmatter(skill_md, entry)
+    assert skill_md.read_text() == (
+        "---\nname: demo-skill\ndisable-model-invocation: true\n---\n\nbody\n"
+    )
+
+
+def test_override_frontmatter_does_nothing_without_declared_fields(tmp_path: Path) -> None:
+    assert update_skills.override_frontmatter(tmp_path / "absent.md", ENTRY)
+
+
+def test_override_frontmatter_fails_loudly_on_an_uneditable_file(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    skill_md = tmp_path / "SKILL.md"
+    skill_md.write_text("no frontmatter here\n")
+    entry = ENTRY._replace(frontmatter=(("disable-model-invocation", True),))
+
+    assert not update_skills.override_frontmatter(skill_md, entry)
+    assert "does not start with" in capsys.readouterr().err
 
 
 def test_rename_frontmatter_fails_loudly_without_a_name_field(

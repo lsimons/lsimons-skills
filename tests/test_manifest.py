@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from scripts.frontmatter import field_value, render
 from scripts.manifest import SkillEntry, load_manifest, local_name_for
 from scripts.paths import SKILLS_DIR, UPSTREAM_MANIFEST
 
@@ -109,6 +110,32 @@ def test_rejects_a_source_colliding_with_a_local_skill(tmp_path: Path) -> None:
         load_manifest(write_manifest(tmp_path, 'local = ["first"]\n' + MINIMAL_SOURCE))
 
 
+def test_parses_frontmatter_overrides(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + "[source.frontmatter]\nfirst = { disable-model-invocation = true }\n"
+    manifest = load_manifest(write_manifest(tmp_path, content))
+    first, second = manifest.entries
+    assert first.frontmatter_fields == {"disable-model-invocation": True}
+    assert second.frontmatter_fields == {}
+
+
+def test_rejects_frontmatter_for_a_skill_not_listed(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + "[source.frontmatter]\nthird = { a = true }\n"
+    with pytest.raises(ValueError, match=r"frontmatter for skills not listed: \['third'\]"):
+        load_manifest(write_manifest(tmp_path, content))
+
+
+def test_rejects_overriding_the_name_field(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + '[source.frontmatter]\nfirst = { name = "other" }\n'
+    with pytest.raises(ValueError, match="'name' is set by the fetcher"):
+        load_manifest(write_manifest(tmp_path, content))
+
+
+def test_rejects_a_non_scalar_frontmatter_value(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + "[source.frontmatter]\nfirst = { tags = [1, 2] }\n"
+    with pytest.raises(ValueError, match="'tags' must be a string or boolean"):
+        load_manifest(write_manifest(tmp_path, content))
+
+
 @pytest.mark.parametrize(
     ("name", "prefix", "expected"),
     [
@@ -137,6 +164,24 @@ def test_real_manifest_declares_every_vendored_skill() -> None:
         p.name for p in SKILLS_DIR.iterdir() if p.is_dir() and p.name not in declared
     )
     assert undeclared == []
+
+
+def test_real_manifest_frontmatter_overrides_are_applied_to_the_vendored_tree() -> None:
+    """A declared override must be present in the committed SKILL.md.
+
+    `skills/` is committed, so an override could otherwise drift out of the
+    tree — by a hand edit, or by declaring one without re-fetching.
+    """
+    for entry in load_manifest(UPSTREAM_MANIFEST).entries:
+        fields = entry.frontmatter_fields
+        if not fields:
+            continue
+        text = (SKILLS_DIR / entry.local_name / "SKILL.md").read_text()
+        for key, value in fields.items():
+            assert field_value(text, key) == render(value), (
+                f"{entry.local_name} declares '{key}' but its SKILL.md does not match; "
+                f"run `mise run skills-update`"
+            )
 
 
 def test_real_manifest_records_licensing_for_every_source() -> None:

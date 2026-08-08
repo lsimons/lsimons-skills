@@ -8,13 +8,22 @@ from different packs cannot collide (both `lsimons/superpowers` and
 Renaming a skill is only mechanically half the job: the fetcher renames the
 directory and the `name:` frontmatter field, but cross-references inside
 skill bodies are prose, and are handled by `scripts.rewrites`. See AGENTS.md.
+
+A source may also declare `frontmatter` overrides, applied by
+`scripts.frontmatter` to a fetched skill's YAML header — how a skill is
+exposed here is a vendoring decision of the same kind as what it is called
+here, so it is declared in the manifest rather than patched after the fact.
 """
 
 import tomllib
 from pathlib import Path
 from typing import Any, NamedTuple, cast
 
+from scripts.frontmatter import FieldValue
 from scripts.paths import UPSTREAM_MANIFEST
+
+# The fetcher owns `name:`, deriving it from the skill's local name.
+FRONTMATTER_RESERVED = frozenset({"name"})
 
 
 class SkillEntry(NamedTuple):
@@ -23,11 +32,17 @@ class SkillEntry(NamedTuple):
     repository: str
     upstream_name: str
     local_name: str
+    frontmatter: tuple[tuple[str, FieldValue], ...] = ()
 
     @property
     def renamed(self) -> bool:
         """True if this skill is vendored under a different name than upstream."""
         return self.upstream_name != self.local_name
+
+    @property
+    def frontmatter_fields(self) -> dict[str, FieldValue]:
+        """The declared frontmatter overrides, as a mapping."""
+        return dict(self.frontmatter)
 
 
 class Source(NamedTuple):
@@ -79,6 +94,23 @@ def _require(table: dict[str, object], key: str, kind: type, where: str) -> Any:
     return value
 
 
+def _parse_frontmatter(fields: object, where: str) -> tuple[tuple[str, FieldValue], ...]:
+    """Validate one skill's frontmatter overrides, preserving declaration order."""
+    if fields is None:
+        return ()
+    if not isinstance(fields, dict):
+        raise ValueError(f"{where}: must be a table of '<field>' = <string or boolean>")
+
+    parsed: list[tuple[str, FieldValue]] = []
+    for key, value in cast(dict[str, object], fields).items():
+        if key in FRONTMATTER_RESERVED:
+            raise ValueError(f"{where}: '{key}' is set by the fetcher and cannot be overridden")
+        if not isinstance(value, str | bool):
+            raise ValueError(f"{where}: '{key}' must be a string or boolean, got {value!r}")
+        parsed.append((key, value))
+    return tuple(parsed)
+
+
 def _parse_source(table: dict[str, object], index: int) -> Source:
     """Build one `Source` from a `[[source]]` table."""
     where = f"[[source]] #{index + 1}"
@@ -94,6 +126,11 @@ def _parse_source(table: dict[str, object], index: int) -> Source:
         raise ValueError(f"{where}: 'rename' must be a table")
     renames = cast(dict[str, object], raw_renames)
 
+    raw_frontmatter = table.get("frontmatter", {})
+    if not isinstance(raw_frontmatter, dict):
+        raise ValueError(f"{where}: 'frontmatter' must be a table")
+    frontmatter = cast(dict[str, object], raw_frontmatter)
+
     skills = cast(list[object], _require(table, "skills", list, where))
     entries: list[SkillEntry] = []
     names: list[str] = []
@@ -104,11 +141,22 @@ def _parse_source(table: dict[str, object], index: int) -> Source:
         if override is not None and not isinstance(override, str):
             raise ValueError(f"{where}: rename of '{skill}' must be a string")
         names.append(skill)
-        entries.append(SkillEntry(repository, skill, override or local_name_for(skill, prefix)))
+        entries.append(
+            SkillEntry(
+                repository,
+                skill,
+                override or local_name_for(skill, prefix),
+                _parse_frontmatter(frontmatter.get(skill), f"{where}: frontmatter of '{skill}'"),
+            )
+        )
 
     unknown = sorted(set(renames) - set(names))
     if unknown:
         raise ValueError(f"{where}: renames for skills not listed: {unknown}")
+
+    unknown = sorted(set(frontmatter) - set(names))
+    if unknown:
+        raise ValueError(f"{where}: frontmatter for skills not listed: {unknown}")
 
     return Source(
         repository=repository,
