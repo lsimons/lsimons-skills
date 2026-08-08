@@ -158,10 +158,17 @@ def test_real_manifest_is_parseable_and_fully_vendored() -> None:
 
 
 def test_real_manifest_declares_every_vendored_skill() -> None:
-    """No stray directories: `--prune` would delete anything undeclared."""
+    """No stray directories: `--prune` would delete anything undeclared.
+
+    Symlinks are excluded, matching `update_skills.undeclared_skills`: a
+    symlinked skill points at another checkout and is out of the manifest on
+    purpose.
+    """
     declared = load_manifest(UPSTREAM_MANIFEST).declared_names
     undeclared = sorted(
-        p.name for p in SKILLS_DIR.iterdir() if p.is_dir() and p.name not in declared
+        p.name
+        for p in SKILLS_DIR.iterdir()
+        if p.is_dir() and not p.is_symlink() and p.name not in declared
     )
     assert undeclared == []
 

@@ -434,6 +434,19 @@ def test_undeclared_skills_ignores_declared_and_hand_maintained_directories(
     ]
 
 
+def test_undeclared_skills_ignores_symlinked_directories(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A symlinked skill lives in another checkout and is not ours to prune."""
+    monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path / "skills")
+    (tmp_path / "skills").mkdir()
+    elsewhere = tmp_path / "elsewhere" / "linked"
+    elsewhere.mkdir(parents=True)
+    (tmp_path / "skills" / "linked").symlink_to(elsewhere, target_is_directory=True)
+
+    assert update_skills.undeclared_skills(make_manifest()) == []
+
+
 def test_undeclared_skills_tolerates_a_missing_skills_dir(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

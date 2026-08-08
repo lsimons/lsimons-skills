@@ -219,11 +219,21 @@ def fetch_skills(
 
 
 def undeclared_skills(manifest: Manifest) -> list[Path]:
-    """Return skill directories that the manifest does not account for."""
+    """Return skill directories that the manifest does not account for.
+
+    Symlinks are skipped. A symlinked skill directory is not vendored here —
+    it points at a checkout elsewhere, deliberately outside the manifest (see
+    `skills/sbp-brandbook`) — so reporting it is noise, and `--prune` would
+    only crash on it, since `shutil.rmtree` refuses a symlink.
+    """
     if not SKILLS_DIR.is_dir():
         return []
     declared = manifest.declared_names
-    return sorted(p for p in SKILLS_DIR.iterdir() if p.is_dir() and p.name not in declared)
+    return sorted(
+        p
+        for p in SKILLS_DIR.iterdir()
+        if p.is_dir() and not p.is_symlink() and p.name not in declared
+    )
 
 
 def prune_skills(manifest: Manifest, *, prune: bool, dry_run: bool = False) -> None:
