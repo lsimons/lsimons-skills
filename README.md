@@ -29,8 +29,15 @@ skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
 
 Skills declared in [`upstream-skills.toml`](./upstream-skills.toml) are
 fetched with the skills.sh CLI. Skills listed there under `local`
-(`1password`, `claude-history`, `python-knowledge-patch`) are maintained by
-hand and the fetcher leaves them alone.
+(`1password`, `claude-history`, `leo-bot`, `python-knowledge-patch`) are
+maintained by hand and the fetcher leaves them alone.
+
+`leo-bot` is the router across the vendored packs: it prefers a project's
+own OpenSpec skills when an `openspec/` directory is present, routes
+mission-critical work to `sbp-*`, and otherwise asks you to pick exactly one
+of `mp-*`, `ao-*`, or `s-*` — each pack's own router (`mp-ask-leo`,
+`ao-using-agent-skills`, `s-using-superpowers`) still covers routing within
+that pack.
 
 ```bash
 mise run skills-install    # fetch only what is missing

@@ -42,10 +42,15 @@ so run the tooling as a module from the repository root:
 
 Everything under `skills/` is committed, including skills fetched from
 skills.sh. `upstream-skills.toml` declares what is fetched; skills listed
-under `local` there (`1password`, `claude-history`, `python-knowledge-patch`)
-are maintained by hand and the fetcher leaves them alone. Anything under
-`skills/` that the manifest does not declare is reported on every run, and
-`--prune` deletes it.
+under `local` there (`1password`, `claude-history`, `leo-bot`,
+`python-knowledge-patch`) are maintained by hand and the fetcher leaves them
+alone. Anything under `skills/` that the manifest does not declare is
+reported on every run, and `--prune` deletes it.
+
+`leo-bot` is the cross-pack router — OpenSpec first when the repo has an
+`openspec/` directory, then `sbp-*` for mission-critical work, then exactly
+one of `mp-*` / `ao-*` / `s-*`. When a vendored skill is added, renamed, or
+dropped, its routing table needs updating too.
 
 When editing a fetched skill, remember the next `mise run skills-update` will
 overwrite it — upstream the change, move the skill out of the manifest, or
