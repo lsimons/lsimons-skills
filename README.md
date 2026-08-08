@@ -1,13 +1,19 @@
 # lsimons-skills
 
-The single source of truth for my agent skills. Every skill lives under
-`skills/` and is committed here, whether hand-written or fetched from
-[skills.sh](https://www.skills.sh).
+My agent skills. Every skill lives under `skills/` and is committed here,
+whether hand-written or fetched with [skills.sh](https://www.skills.sh).
 
-This repository only *maintains* `skills/`. Wiring it into a particular
-coding agent's configuration (symlinking into `~/.claude/skills`,
-`~/.agents/skills`, and friends) is the job of whatever consumes this
-repository — for me, the `lsimons-dotfiles` agent topics.
+Upstream sources include forks of
+[sbp](https://github.com/lsimons/sbp-skills),
+[osmani](https://github.com/lsimons/osmani-agent-skills),
+[pocock](https://github.com/lsimons/pocock-skills), and
+[superpowers](https://github.com/lsimons/superpowers).
+
+Wiring skills into a particular coding agent's configuration (symlinking
+into `~/.claude/skills`, `~/.agents/skills`, and friends) is the job of
+whatever consumes this repository. See
+[lsimons-dotfiles/agents](https://github.com/lsimons/lsimons-dotfiles/tree/main/agents)
+for an example.
 
 ## Layout
 
@@ -25,9 +31,6 @@ with the skills.sh CLI; everything else under `skills/` (`1password`,
 `claude-history`, `python-knowledge-patch`) is maintained by hand and the
 fetcher leaves it alone.
 
-Unlike the older dotfiles setup, fetched skills are **vendored in git**, so
-re-fetching an upstream skill lands as a reviewable diff.
-
 Add a skill by appending `<repository-url> <skill-name>` to
 `upstream-skills.txt` and fetching it:
 
@@ -42,8 +45,7 @@ Both accept `--dry-run` when invoked directly:
 uv run python -m scripts.update_skills --dry-run --update
 ```
 
-Browse and search the catalog with the CLI (`skills find`, `skills list`);
-the `find-skills` skill lets agents do that on their own.
+Browse and search the catalog with the CLI (`skills find`, `skills list`).
 
 ## Development Commands
 
@@ -67,26 +69,10 @@ MIT-licensed except the skills listed below.
 | Skill | Upstream | Copyright |
 | --- | --- | --- |
 | `agent-browser` | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | Copyright 2025 Vercel Inc. |
-| `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | Anthropic PBC (upstream states no copyright line; license text vendored at `skills/frontend-design/LICENSE.txt`) |
-
-Neither Apache-licensed upstream ships a `NOTICE` file, so this repository has
-none. If one appears upstream, its contents must be merged into a root
-`NOTICE`.
+| `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | ? |
 
 **MIT** — everything else. Upstream copyright holders are listed in
-[LICENSE](./LICENSE):
-
-| Upstream | Skills | Copyright |
-| --- | --- | --- |
-| [lsimons/osmani-agent-skills](https://github.com/lsimons/osmani-agent-skills) | 25 development-phase skills | Leo Simons, Addy Osmani |
-| [vercel-labs/skills](https://github.com/vercel-labs/skills) | `find-skills` | Vercel, Inc. |
-| [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | `web-design-guidelines` | Vercel, Inc. (MIT per upstream README; no `LICENSE` file) |
-| [nicosuave/memex](https://github.com/nicosuave/memex) | `memex-search`, `instruction-improver` | Nico Ritschel |
-| — (maintained here) | `1password`, `claude-history`, `python-knowledge-patch` | see [LICENSE](./LICENSE) |
-
-When adding an entry to `upstream-skills.txt`, check the upstream license and
-update this section, [LICENSE](./LICENSE), and — for a new Apache-licensed
-upstream — any `NOTICE` requirement.
+[LICENSE](./LICENSE).
 
 ## Contributing
 

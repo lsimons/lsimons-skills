@@ -2,12 +2,12 @@
 
 > This file (`AGENTS.md`) is the canonical agent configuration. `CLAUDE.md` is a symlink to this file.
 
-The single source of truth for my agent skills: Markdown skill definitions under
-`skills/`, plus the Python tooling that maintains them.
+My agent skills. Every skill lives under `skills/` and is committed here,
+whether hand-written or fetched with [skills.sh](https://www.skills.sh).
 
-This repository does **not** configure or install any specific coding agent.
-It only maintains `skills/`; consumers (the `lsimons-dotfiles` agent topics)
-link that directory into each agent's config.
+Wiring skills into a particular coding agent's configuration (symlinking
+into `~/.claude/skills`, `~/.agents/skills`, and friends) is the job of
+whatever consumes this repository.
 
 ## Quick Reference
 
@@ -96,3 +96,9 @@ Work is NOT complete until every change is committed, pushed, and CI passes.
    On failure, inspect with `gh run view --log-failed`, fix, commit, push, and re-watch.
 
 Never stop before CI is green. If anything fails, resolve and retry.
+
+# Licensing
+
+When adding an entry to `upstream-skills.txt`, check the upstream license and
+update the README, LICENSE, and — for a new Apache-licensed upstream — implement
+any `NOTICE` requirement.
