@@ -57,9 +57,36 @@ mise run format       # ruff format + --fix
 mise run ci           # full CI gate
 ```
 
-## License
+## Licensing
 
-See [LICENSE](./LICENSE).
+Skills vendored under `skills/` keep their upstream license. Everything is
+MIT-licensed except the skills listed below.
+
+**Apache License 2.0** — see [APACHE-LICENSE](./APACHE-LICENSE):
+
+| Skill | Upstream | Copyright |
+| --- | --- | --- |
+| `agent-browser` | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | Copyright 2025 Vercel Inc. |
+| `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | Anthropic PBC (upstream states no copyright line; license text vendored at `skills/frontend-design/LICENSE.txt`) |
+
+Neither Apache-licensed upstream ships a `NOTICE` file, so this repository has
+none. If one appears upstream, its contents must be merged into a root
+`NOTICE`.
+
+**MIT** — everything else. Upstream copyright holders are listed in
+[LICENSE](./LICENSE):
+
+| Upstream | Skills | Copyright |
+| --- | --- | --- |
+| [lsimons/osmani-agent-skills](https://github.com/lsimons/osmani-agent-skills) | 25 development-phase skills | Leo Simons, Addy Osmani |
+| [vercel-labs/skills](https://github.com/vercel-labs/skills) | `find-skills` | Vercel, Inc. |
+| [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | `web-design-guidelines` | Vercel, Inc. (MIT per upstream README; no `LICENSE` file) |
+| [nicosuave/memex](https://github.com/nicosuave/memex) | `memex-search`, `instruction-improver` | Nico Ritschel |
+| — (maintained here) | `1password`, `claude-history`, `python-knowledge-patch` | see [LICENSE](./LICENSE) |
+
+When adding an entry to `upstream-skills.txt`, check the upstream license and
+update this section, [LICENSE](./LICENSE), and — for a new Apache-licensed
+upstream — any `NOTICE` requirement.
 
 ## Contributing
 

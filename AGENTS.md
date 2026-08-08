@@ -45,6 +45,13 @@ maintained by hand here and the fetcher leaves them alone.
 When editing a fetched skill, remember the next `mise run skills-update` will
 overwrite it — upstream the change or move the skill out of the manifest.
 
+Because skills are vendored, licensing is this repository's problem. Adding an
+entry to `upstream-skills.txt` means checking its upstream license and updating
+the "Licensing" section of `README.md` plus `LICENSE`. Most skills are MIT;
+`agent-browser` and `frontend-design` are Apache 2.0 (`APACHE-LICENSE`). If an
+Apache-licensed upstream ever ships a `NOTICE`, its contents must be merged
+into a root `NOTICE`.
+
 ## Guidelines
 
 **Code quality:**
