@@ -1,33 +1,164 @@
-"""Parsing of `upstream-skills.txt`, the manifest of fetched skills."""
+"""Parsing of `upstream-skills.toml`, the manifest of vendored skills.
 
+The manifest declares, per upstream repository, which skills to fetch and
+what to call them here. Local names are derived by prefixing, so that skills
+from different packs cannot collide (both `lsimons/superpowers` and
+`lsimons/osmani-agent-skills` ship a `test-driven-development`).
+
+Renaming a skill is only mechanically half the job: the fetcher renames the
+directory and the `name:` frontmatter field, but cross-references inside
+skill bodies are prose, and are handled by `scripts.rewrites`. See AGENTS.md.
+"""
+
+import tomllib
 from pathlib import Path
-from typing import NamedTuple
+from typing import Any, NamedTuple, cast
 
 from scripts.paths import UPSTREAM_MANIFEST
 
 
 class SkillEntry(NamedTuple):
-    """One `<repository-url> <skill-name>` line of the manifest."""
+    """One skill to fetch, and the name it takes in this repository."""
 
     repository: str
-    name: str
+    upstream_name: str
+    local_name: str
+
+    @property
+    def renamed(self) -> bool:
+        """True if this skill is vendored under a different name than upstream."""
+        return self.upstream_name != self.local_name
 
 
-def load_manifest(path: Path = UPSTREAM_MANIFEST) -> list[SkillEntry]:
-    """Return every skill declared in the manifest, in file order.
+class Source(NamedTuple):
+    """One upstream repository and the skills taken from it."""
 
-    Blank lines and `#` comments are ignored. Any other line must hold
-    exactly two whitespace-separated fields.
+    repository: str
+    prefix: str
+    license: str
+    copyright: str
+    entries: list[SkillEntry]
+
+
+class Manifest(NamedTuple):
+    """The whole manifest: fetched sources plus hand-maintained skills."""
+
+    sources: list[Source]
+    local_skills: list[str]
+
+    @property
+    def entries(self) -> list[SkillEntry]:
+        """Every fetched skill, in manifest order."""
+        return [entry for source in self.sources for entry in source.entries]
+
+    @property
+    def declared_names(self) -> set[str]:
+        """Every skill directory this manifest accounts for, fetched or not."""
+        return {entry.local_name for entry in self.entries} | set(self.local_skills)
+
+
+def local_name_for(upstream_name: str, prefix: str) -> str:
+    """Apply `prefix` to `upstream_name`, unless it already carries it.
+
+    Upstreams that already namespace some of their skills (`sbp-*`,
+    `memex-search`) keep the names they have, so one prefix can be declared
+    for a whole repository without double-prefixing part of it.
     """
+    if not prefix or upstream_name.startswith(prefix):
+        return upstream_name
+    return f"{prefix}{upstream_name}"
+
+
+def _require(table: dict[str, object], key: str, kind: type, where: str) -> Any:
+    """Return `table[key]`, raising a located error if it is missing or mistyped."""
+    if key not in table:
+        raise ValueError(f"{where}: missing required key '{key}'")
+    value = table[key]
+    if not isinstance(value, kind):
+        raise ValueError(f"{where}: '{key}' must be a {kind.__name__}, got {type(value).__name__}")
+    return value
+
+
+def _parse_source(table: dict[str, object], index: int) -> Source:
+    """Build one `Source` from a `[[source]]` table."""
+    where = f"[[source]] #{index + 1}"
+    repository: str = _require(table, "repository", str, where)
+    where = f"[[source]] {repository}"
+
+    prefix = table.get("prefix", "")
+    if not isinstance(prefix, str):
+        raise ValueError(f"{where}: 'prefix' must be a string")
+
+    raw_renames = table.get("rename", {})
+    if not isinstance(raw_renames, dict):
+        raise ValueError(f"{where}: 'rename' must be a table")
+    renames = cast(dict[str, object], raw_renames)
+
+    skills = cast(list[object], _require(table, "skills", list, where))
     entries: list[SkillEntry] = []
-    for lineno, raw in enumerate(path.read_text().splitlines(), start=1):
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        parts = line.split()
-        if len(parts) != 2:
+    names: list[str] = []
+    for skill in skills:
+        if not isinstance(skill, str):
+            raise ValueError(f"{where}: 'skills' must contain only strings")
+        override = renames.get(skill)
+        if override is not None and not isinstance(override, str):
+            raise ValueError(f"{where}: rename of '{skill}' must be a string")
+        names.append(skill)
+        entries.append(SkillEntry(repository, skill, override or local_name_for(skill, prefix)))
+
+    unknown = sorted(set(renames) - set(names))
+    if unknown:
+        raise ValueError(f"{where}: renames for skills not listed: {unknown}")
+
+    return Source(
+        repository=repository,
+        prefix=prefix,
+        license=_require(table, "license", str, where),
+        copyright=_require(table, "copyright", str, where),
+        entries=entries,
+    )
+
+
+def load_manifest(path: Path = UPSTREAM_MANIFEST) -> Manifest:
+    """Read and validate the manifest.
+
+    Raises ValueError, naming the offending source, on a malformed entry or
+    on two declarations claiming the same directory under `skills/`.
+    """
+    data = tomllib.loads(path.read_text())
+
+    raw_local = data.get("local", [])
+    if not isinstance(raw_local, list):
+        raise ValueError(f"{path}: 'local' must be a list of strings")
+    local_skills: list[str] = []
+    for name in cast(list[object], raw_local):
+        if not isinstance(name, str):
+            raise ValueError(f"{path}: 'local' must be a list of strings")
+        local_skills.append(name)
+
+    raw_sources = data.get("source", [])
+    if not isinstance(raw_sources, list):
+        raise ValueError(f"{path}: 'source' must be an array of tables")
+
+    sources: list[Source] = []
+    for index, table in enumerate(cast(list[object], raw_sources)):
+        if not isinstance(table, dict):
+            raise ValueError(f"{path}: [[source]] #{index + 1} must be a table")
+        sources.append(_parse_source(cast(dict[str, object], table), index))
+
+    manifest = Manifest(sources=sources, local_skills=local_skills)
+    _reject_duplicates(manifest, path)
+    return manifest
+
+
+def _reject_duplicates(manifest: Manifest, path: Path) -> None:
+    """Fail if two declarations claim the same directory under `skills/`."""
+    seen: dict[str, str] = dict.fromkeys(manifest.local_skills, "local")
+    for entry in manifest.entries:
+        previous = seen.get(entry.local_name)
+        if previous is not None:
             raise ValueError(
-                f"{path}:{lineno}: expected '<repository-url> <skill-name>', got: {line}"
+                f"{path}: '{entry.local_name}' is declared twice "
+                f"(by {previous} and by {entry.repository})"
             )
-        entries.append(SkillEntry(parts[0], parts[1]))
-    return entries
+        seen[entry.local_name] = entry.repository

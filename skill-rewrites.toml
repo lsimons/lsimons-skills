@@ -1,0 +1,542 @@
+# Cross-reference rewrites replayed by `scripts/rewrites.py` after each fetch.
+#
+# Renaming a vendored skill breaks references to its old name in other skills'
+# prose. Many upstream names are also ordinary words (`research`, `implement`,
+# `terraform`, `brainstorming`, `triage`), so this cannot be find-and-replace:
+# each pair below is a judgement that a specific string means the skill and not
+# the word. Bare prose is deliberately left alone.
+#
+# Keyed by local skill name, then by path relative to the skill directory.
+# Pairs are literal, applied to every occurrence, in the order listed —
+# longest first, so `superpowers:writing-plans` fires before `writing-plans`.
+#
+# Regenerate the triage worklist with `mise run skills-refs`. See AGENTS.md.
+
+
+["ao-api-and-interface-design"]
+"SKILL.md" = [
+  ["`deprecation-and-migration`", "`ao-deprecation-and-migration`"],
+]
+
+["ao-autonomous-plan-execution"]
+"SKILL.md" = [
+  ["use incremental-implementation and test-driven-development directly", "use ao-incremental-implementation and ao-test-driven-development directly"],
+  ["`debugging-and-error-recovery`", "`ao-debugging-and-error-recovery`"],
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`doubt-driven-development`", "`ao-doubt-driven-development`"],
+  ["`spec-driven-development`", "`ao-spec-driven-development`"],
+  ["`test-driven-development`", "`ao-test-driven-development`"],
+]
+
+["ao-ci-cd-and-automation"]
+"SKILL.md" = [
+  ["follows debugging-and-error-recovery skill", "follows ao-debugging-and-error-recovery skill"],
+]
+
+["ao-code-review-and-quality"]
+"SKILL.md" = [
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+"references/performance-checklist.md" = [
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+]
+"references/security-checklist.md" = [
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+
+["ao-debugging-and-error-recovery"]
+"SKILL.md" = [
+  ["the test-driven-development skill's", "the ao-test-driven-development skill's"],
+]
+
+["ao-deprecation-and-migration"]
+"SKILL.md" = [
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+]
+
+["ao-documentation-and-adrs"]
+"SKILL.md" = [
+  ["`spec-driven-development`", "`ao-spec-driven-development`"],
+]
+
+["ao-doubt-driven-development"]
+"SKILL.md" = [
+  ["`debugging-and-error-recovery`", "`ao-debugging-and-error-recovery`"],
+  ["`source-driven-development`", "`ao-source-driven-development`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`test-driven-development`", "`ao-test-driven-development`"],
+]
+
+["ao-frontend-ui-engineering"]
+"references/accessibility-checklist.md" = [
+  ["`frontend-ui-engineering`", "`ao-frontend-ui-engineering`"],
+]
+
+["ao-git-workflow-and-versioning"]
+"SKILL.md" = [
+  ["`deprecation-and-migration`", "`ao-deprecation-and-migration`"],
+  ["`api-and-interface-design`", "`ao-api-and-interface-design`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+
+["ao-idea-refine"]
+"SKILL.md" = [
+  ["/idea-refine/", "/ao-idea-refine/"],
+]
+
+["ao-incremental-implementation"]
+"SKILL.md" = [
+  ["the test-driven-development skill's", "the ao-test-driven-development skill's"],
+  ["`git-workflow-and-versioning`", "`ao-git-workflow-and-versioning`"],
+]
+"references/definition-of-done.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`documentation-and-adrs`", "`ao-documentation-and-adrs`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`code-simplification`", "`ao-code-simplification`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+
+["ao-interview-me"]
+"SKILL.md" = [
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["After applying interview-me:", "After applying ao-interview-me:"],
+  ["`source-driven-development`", "`ao-source-driven-development`"],
+  ["`doubt-driven-development`", "`ao-doubt-driven-development`"],
+  ["`spec-driven-development`", "`ao-spec-driven-development`"],
+  ["`interview-me`", "`ao-interview-me`"],
+  ["`idea-refine`", "`ao-idea-refine`"],
+]
+
+["ao-observability-and-instrumentation"]
+"SKILL.md" = [
+  ["`debugging-and-error-recovery`", "`ao-debugging-and-error-recovery`"],
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+"references/observability-checklist.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+
+["ao-performance-optimization"]
+"SKILL.md" = [
+  ["`browser-testing-with-devtools`", "`ao-browser-testing-with-devtools`"],
+]
+"references/performance-checklist.md" = [
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+]
+
+["ao-planning-and-task-breakdown"]
+"SKILL.md" = [
+  ["`autonomous-plan-execution`", "`ao-autonomous-plan-execution`"],
+]
+"references/definition-of-done.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`documentation-and-adrs`", "`ao-documentation-and-adrs`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`code-simplification`", "`ao-code-simplification`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+
+["ao-security-and-hardening"]
+"references/security-checklist.md" = [
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+
+["ao-shipping-and-launch"]
+"SKILL.md" = [
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+"references/accessibility-checklist.md" = [
+  ["`frontend-ui-engineering`", "`ao-frontend-ui-engineering`"],
+]
+"references/definition-of-done.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`documentation-and-adrs`", "`ao-documentation-and-adrs`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`code-simplification`", "`ao-code-simplification`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+"references/performance-checklist.md" = [
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+]
+"references/security-checklist.md" = [
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+
+["ao-spec-driven-development"]
+"SKILL.md" = [
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["/incremental-implementation/", "/ao-incremental-implementation/"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`autonomous-plan-execution`", "`ao-autonomous-plan-execution`"],
+  ["/test-driven-development/", "/ao-test-driven-development/"],
+  ["`test-driven-development`", "`ao-test-driven-development`"],
+  ["/context-engineering/", "/ao-context-engineering/"],
+  ["`context-engineering`", "`ao-context-engineering`"],
+]
+
+["ao-test-driven-development"]
+"SKILL.md" = [
+  ["`browser-testing-with-devtools`", "`ao-browser-testing-with-devtools`"],
+]
+"references/testing-patterns.md" = [
+  ["`test-driven-development`", "`ao-test-driven-development`"],
+]
+
+["ao-using-agent-skills"]
+"SKILL.md" = [
+  ["observability-and-instrumentation", "ao-observability-and-instrumentation"],
+  ["browser-testing-with-devtools", "ao-browser-testing-with-devtools"],
+  ["debugging-and-error-recovery", "ao-debugging-and-error-recovery"],
+  ["planning-and-task-breakdown", "ao-planning-and-task-breakdown"],
+  ["git-workflow-and-versioning", "ao-git-workflow-and-versioning"],
+  ["incremental-implementation", "ao-incremental-implementation"],
+  ["autonomous-plan-execution", "ao-autonomous-plan-execution"],
+  ["source-driven-development", "ao-source-driven-development"],
+  ["deprecation-and-migration", "ao-deprecation-and-migration"],
+  ["api-and-interface-design", "ao-api-and-interface-design"],
+  ["doubt-driven-development", "ao-doubt-driven-development"],
+  ["performance-optimization", "ao-performance-optimization"],
+  ["spec-driven-development", "ao-spec-driven-development"],
+  ["frontend-ui-engineering", "ao-frontend-ui-engineering"],
+  ["test-driven-development", "ao-test-driven-development"],
+  ["code-review-and-quality", "ao-code-review-and-quality"],
+  ["security-and-hardening", "ao-security-and-hardening"],
+  ["documentation-and-adrs", "ao-documentation-and-adrs"],
+  ["ci-cd-and-automation", "ao-ci-cd-and-automation"],
+  ["context-engineering", "ao-context-engineering"],
+  ["code-simplification", "ao-code-simplification"],
+  ["shipping-and-launch", "ao-shipping-and-launch"],
+  ["`mcaf-module`", "`sbp-mcaf-module`"],
+  ["`review-mcaf`", "`sbp-review-mcaf`"],
+  ["interview-me", "ao-interview-me"],
+  ["idea-refine", "ao-idea-refine"],
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/definition-of-done.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`documentation-and-adrs`", "`ao-documentation-and-adrs`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`code-simplification`", "`ao-code-simplification`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+]
+
+["mp-ask-leo"]
+"PHASE-BOUNDARIES.md" = [
+  ["`/handoff`", "`/mp-handoff`"],
+]
+"SKILL.md" = [
+  ["`/improve-codebase-architecture`", "`/mp-improve-codebase-architecture`"],
+  ["`/resolving-merge-conflicts`", "`/mp-resolving-merge-conflicts`"],
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+  ["`/writing-for-agents`", "`/mp-writing-for-agents`"],
+  ["`/to-questionnaire`", "`/mp-to-questionnaire`"],
+  ["`/codebase-design`", "`/mp-codebase-design`"],
+  ["`/diagnosing-bugs`", "`/mp-diagnosing-bugs`"],
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["`/grill-with-docs`", "`/mp-grill-with-docs`"],
+  ["`grill-with-docs`", "`mp-grill-with-docs`"],
+  ["`/code-review`", "`/mp-code-review`"],
+  ["`mcaf-module`", "`sbp-mcaf-module`"],
+  ["`review-mcaf`", "`sbp-review-mcaf`"],
+  ["`/to-tickets`", "`/mp-to-tickets`"],
+  ["`/implement`", "`/mp-implement`"],
+  ["`/prototype`", "`/mp-prototype`"],
+  ["`/wait-what`", "`/mp-wait-what`"],
+  ["`/wayfinder`", "`/mp-wayfinder`"],
+  ["`/grill-me`", "`/mp-grill-me`"],
+  ["`/grilling`", "`/mp-grilling`"],
+  ["`/research`", "`/mp-research`"],
+  ["`terraform`", "`sbp-terraform`"],
+  ["`/handoff`", "`/mp-handoff`"],
+  ["`/to-spec`", "`/mp-to-spec`"],
+  ["`/triage`", "`/mp-triage`"],
+  ["`/wizard`", "`/mp-wizard`"],
+  ["`/teach`", "`/mp-teach`"],
+  ["`/tdd`", "`/mp-tdd`"],
+]
+
+["mp-code-review"]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+]
+
+["mp-diagnosing-bugs"]
+"SKILL.md" = [
+  ["`/improve-codebase-architecture`", "`/mp-improve-codebase-architecture`"],
+]
+
+["mp-grill-me"]
+"SKILL.md" = [
+  ["`/grilling`", "`/mp-grilling`"],
+]
+
+["mp-grill-with-docs"]
+"SKILL.md" = [
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["`/grilling`", "`/mp-grilling`"],
+]
+
+["mp-implement"]
+"SKILL.md" = [
+  ["/code-review", "/mp-code-review"],
+  ["/tdd", "/mp-tdd"],
+]
+
+["mp-improve-codebase-architecture"]
+"HTML-REPORT.md" = [
+  ["`/codebase-design`", "`/mp-codebase-design`"],
+]
+"SKILL.md" = [
+  ["`/codebase-design`", "`/mp-codebase-design`"],
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["/domain-modeling/", "/mp-domain-modeling/"],
+  ["`domain-modeling`", "`mp-domain-modeling`"],
+  ["`/grilling`", "`/mp-grilling`"],
+]
+
+["mp-prototype"]
+"UI.md" = [
+  ["/prototype/", "/mp-prototype/"],
+  ["`prototype`", "`mp-prototype`"],
+]
+
+["mp-setup-matt-pocock-skills"]
+"SKILL.md" = [
+  ["`domain-modeling`", "`mp-domain-modeling`"],
+  ["`to-tickets`", "`mp-to-tickets`"],
+  ["`to-spec`", "`mp-to-spec`"],
+  ["`triage`", "`mp-triage`"],
+]
+"domain.md" = [
+  ["`/improve-codebase-architecture`", "`/mp-improve-codebase-architecture`"],
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["`/grill-with-docs`", "`/mp-grill-with-docs`"],
+  ["/domain-modeling/", "/mp-domain-modeling/"],
+]
+"issue-tracker-github.md" = [
+  ["`/wayfinder`", "`/mp-wayfinder`"],
+  ["`prototype`", "`mp-prototype`"],
+  ["`grilling`", "`mp-grilling`"],
+  ["`research`", "`mp-research`"],
+  ["`/triage`", "`/mp-triage`"],
+]
+"issue-tracker-gitlab.md" = [
+  ["`/wayfinder`", "`/mp-wayfinder`"],
+  ["`prototype`", "`mp-prototype`"],
+  ["`grilling`", "`mp-grilling`"],
+  ["`research`", "`mp-research`"],
+  ["`/triage`", "`/mp-triage`"],
+]
+"issue-tracker-local.md" = [
+  ["`/wayfinder`", "`/mp-wayfinder`"],
+  ["`prototype`", "`mp-prototype`"],
+  ["`grilling`", "`mp-grilling`"],
+  ["`research`", "`mp-research`"],
+]
+
+["mp-tdd"]
+"SKILL.md" = [
+  ["`/codebase-design`", "`/mp-codebase-design`"],
+  ["`code-review`", "`mp-code-review`"],
+]
+
+["mp-to-spec"]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+]
+
+["mp-to-tickets"]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+]
+
+["mp-triage"]
+"AGENT-BRIEF.md" = [
+  ["`/triage`", "`/mp-triage`"],
+  ["/triage/", "/mp-triage/"],
+]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["`/grilling`", "`/mp-grilling`"],
+  ["`/triage`", "`/mp-triage`"],
+]
+
+["mp-wayfinder"]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+  ["`/domain-modeling`", "`/mp-domain-modeling`"],
+  ["`/grilling`", "`/mp-grilling`"],
+  ["`prototype`", "`mp-prototype`"],
+  ["`/research`", "`/mp-research`"],
+  ["`grilling`", "`mp-grilling`"],
+  ["/prototype", "/mp-prototype"],
+  ["`research`", "`mp-research`"],
+]
+
+["mp-writing-for-agents"]
+"SKILL-MECHANICS.md" = [
+  ["`writing-for-agents`", "`mp-writing-for-agents`"],
+]
+
+["s-brainstorming"]
+"SKILL.md" = [
+  ["writing-plans is the next step", "s-writing-plans is the next step"],
+  ["Do NOT invoke frontend-design", "Do NOT invoke an-frontend-design"],
+  ["\"Invoke writing-plans skill\"", "\"Invoke s-writing-plans skill\""],
+  ["invoke writing-plans skill", "invoke s-writing-plans skill"],
+  ["the writing-plans skill", "the s-writing-plans skill"],
+  ["invoking writing-plans", "invoking s-writing-plans"],
+  ["/brainstorming/", "/s-brainstorming/"],
+]
+
+["s-executing-plans"]
+"SKILL.md" = [
+  ["superpowers:finishing-a-development-branch", "s-finishing-a-development-branch"],
+  ["the finishing-a-development-branch skill", "the s-finishing-a-development-branch skill"],
+  ["superpowers:subagent-driven-development", "s-subagent-driven-development"],
+  ["superpowers:using-git-worktrees", "s-using-git-worktrees"],
+  ["the executing-plans skill", "the s-executing-plans skill"],
+]
+
+["s-finishing-a-development-branch"]
+"SKILL.md" = [
+  ["the finishing-a-development-branch skill", "the s-finishing-a-development-branch skill"],
+]
+
+["s-subagent-driven-development"]
+"SKILL.md" = [
+  ["superpowers:finishing-a-development-branch", "s-finishing-a-development-branch"],
+  ["finishing-a-development-branch presents", "s-finishing-a-development-branch presents"],
+  ["superpowers:requesting-code-review", "s-requesting-code-review"],
+  ["superpowers:using-git-worktrees", "s-using-git-worktrees"],
+  ["\"subagent-driven-development\"", "\"s-subagent-driven-development\""],
+  ["\"executing-plans\"", "\"s-executing-plans\""],
+]
+
+["s-systematic-debugging"]
+"SKILL.md" = [
+  ["superpowers:verification-before-completion", "s-verification-before-completion"],
+  ["superpowers:test-driven-development", "s-test-driven-development"],
+]
+
+["s-test-driven-development"]
+"writing-good-tests.md" = [
+  ["superpowers:writing-skills", "s-writing-skills"],
+]
+
+["s-using-git-worktrees"]
+"SKILL.md" = [
+  ["the using-git-worktrees skill", "the s-using-git-worktrees skill"],
+]
+
+["s-using-superpowers"]
+"SKILL.md" = [
+  ["verification-before-completion", "s-verification-before-completion"],
+  ["finishing-a-development-branch", "s-finishing-a-development-branch"],
+  ["subagent-driven-development", "s-subagent-driven-development"],
+  ["dispatching-parallel-agents", "s-dispatching-parallel-agents"],
+  ["test-driven-development", "s-test-driven-development"],
+  ["requesting-code-review", "s-requesting-code-review"],
+  ["receiving-code-review", "s-receiving-code-review"],
+  ["systematic-debugging", "s-systematic-debugging"],
+  ["using-git-worktrees", "s-using-git-worktrees"],
+  ["executing-plans", "s-executing-plans"],
+  ["writing-skills", "s-writing-skills"],
+  ["brainstorming", "s-brainstorming"],
+  ["writing-plans", "s-writing-plans"],
+]
+
+["s-writing-plans"]
+"SKILL.md" = [
+  ["superpowers:subagent-driven-development", "s-subagent-driven-development"],
+  ["superpowers:using-git-worktrees", "s-using-git-worktrees"],
+  ["superpowers:executing-plans", "s-executing-plans"],
+  ["the writing-plans skill", "the s-writing-plans skill"],
+  ["using executing-plans", "using s-executing-plans"],
+]
+
+["s-writing-skills"]
+"SKILL.md" = [
+  ["superpowers:test-driven-development", "s-test-driven-development"],
+  ["superpowers:systematic-debugging", "s-systematic-debugging"],
+  ["/test-driven-development/", "/s-test-driven-development/"],
+]
+"testing-skills-with-subagents.md" = [
+  ["superpowers:test-driven-development", "s-test-driven-development"],
+]
+
+["sbp-mcaf-module"]
+"GUIDE.md" = [
+  ["/mcaf-module/", "/sbp-mcaf-module/"],
+  ["/review-mcaf/", "/sbp-review-mcaf/"],
+  ["`review-mcaf`", "`sbp-review-mcaf`"],
+  ["/terraform/", "/sbp-terraform/"],
+]
+"SKILL.md" = [
+  ["/review-mcaf/", "/sbp-review-mcaf/"],
+  ["`review-mcaf`", "`sbp-review-mcaf`"],
+  ["/terraform/", "/sbp-terraform/"],
+  ["`terraform`", "`sbp-terraform`"],
+  ["/terraform", "/sbp-terraform"],
+]
+
+["sbp-review-mcaf"]
+"SKILL.md" = [
+  ["# review-mcaf\n", "# sbp-review-mcaf\n"],
+  ["/mcaf-module/", "/sbp-mcaf-module/"],
+  ["`mcaf-module`", "`sbp-mcaf-module`"],
+  ["/terraform/", "/sbp-terraform/"],
+  ["`terraform`", "`sbp-terraform`"],
+  ["/terraform", "/sbp-terraform"],
+]
+
+["sbp-terraform"]
+"SKILL.md" = [
+  ["`mcaf-module`", "`sbp-mcaf-module`"],
+  ["`review-mcaf`", "`sbp-review-mcaf`"],
+]
+"references/ci-cd.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/code-patterns.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/module-patterns.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/quick-reference.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/security-compliance.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+"references/testing.md" = [
+  ["`terraform`", "`sbp-terraform`"],
+]
+
+["vercel-agent-browser"]
+"SKILL.md" = [
+  ["`agent-browser`", "`vercel-agent-browser`"],
+]

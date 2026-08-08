@@ -1,0 +1,189 @@
+# Skills vendored into skills/, fetched with the skills.sh CLI.
+#
+# `scripts/update_skills.py` reads this file (`mise run skills-install` /
+# `mise run skills-update`). Fetched directories ARE committed here, so a
+# re-fetch shows up as a reviewable git diff.
+#
+# Each [[source]] declares one upstream repository:
+#
+#   repository  git URL passed to `skills add`
+#   prefix      namespace prepended to every skill name from this source,
+#               unless the upstream name already starts with it
+#   rename      per-skill override, winning over `prefix`
+#   skills      upstream skill names to fetch
+#   license     upstream license; see the Licensing section of README.md
+#   copyright   upstream copyright holder(s); mirrored into LICENSE
+#
+# Prefixes exist because skill names are a flat global namespace and packs
+# collide: superpowers and osmani-agent-skills both ship a
+# `test-driven-development`. Renaming a skill also breaks references to it in
+# other skills' prose, which is handled separately — see AGENTS.md and
+# skill-rewrites.toml.
+
+# Hand-maintained here, never fetched and never pruned.
+local = ["1password", "claude-history", "python-knowledge-patch"]
+
+[[source]]
+repository = "https://github.com/vercel-labs/skills"
+prefix = "vercel-"
+license = "MIT"
+copyright = "Copyright (c) 2026 Vercel, Inc."
+skills = ["find-skills"]
+
+[[source]]
+repository = "https://github.com/vercel-labs/agent-browser"
+prefix = "vercel-"
+license = "Apache-2.0"
+copyright = "Copyright 2025 Vercel Inc."
+skills = ["agent-browser"]
+
+[[source]]
+repository = "https://github.com/vercel-labs/agent-skills"
+prefix = "vercel-"
+license = "MIT"
+copyright = "Copyright (c) 2026 Vercel, Inc."
+skills = ["web-design-guidelines"]
+
+[[source]]
+repository = "https://github.com/anthropics/skills"
+prefix = "an-"
+license = "Apache-2.0"
+copyright = "Copyright Anthropic PBC"
+skills = ["frontend-design"]
+
+# Shipped by the memex CLI (see memex/install.py). `memex setup` installs
+# these too, but it prompts for a TTY, so fetch them declaratively instead.
+# `memex-search` already carries the prefix and keeps its name.
+[[source]]
+repository = "https://github.com/nicosuave/memex"
+prefix = "memex-"
+license = "MIT"
+copyright = "Copyright (c) 2026 Nico Ritschel"
+skills = ["memex-search", "instruction-improver"]
+
+# Fork of Addy Osmani's agent-skills collection (https://skills.addy.ie),
+# cleaned up with an added skill based on his slash commands.
+[[source]]
+repository = "https://github.com/lsimons/osmani-agent-skills"
+prefix = "ao-"
+license = "MIT"
+copyright = "Copyright (c) 2025 Addy Osmani"
+skills = [
+  "api-and-interface-design",
+  "autonomous-plan-execution",
+  "browser-testing-with-devtools",
+  "ci-cd-and-automation",
+  "code-review-and-quality",
+  "code-simplification",
+  "context-engineering",
+  "debugging-and-error-recovery",
+  "deprecation-and-migration",
+  "documentation-and-adrs",
+  "doubt-driven-development",
+  "frontend-ui-engineering",
+  "git-workflow-and-versioning",
+  "idea-refine",
+  "incremental-implementation",
+  "interview-me",
+  "observability-and-instrumentation",
+  "performance-optimization",
+  "planning-and-task-breakdown",
+  "security-and-hardening",
+  "shipping-and-launch",
+  "source-driven-development",
+  "spec-driven-development",
+  "test-driven-development",
+  "using-agent-skills",
+]
+
+# Fork of Matt Pocock's skills collection.
+[[source]]
+repository = "https://github.com/lsimons/pocock-skills"
+prefix = "mp-"
+license = "MIT"
+copyright = "Copyright (c) 2026 Matt Pocock"
+skills = [
+  "ask-leo",
+  "code-review",
+  "codebase-design",
+  "diagnosing-bugs",
+  "domain-modeling",
+  "grill-me",
+  "grill-with-docs",
+  "grilling",
+  "handoff",
+  "implement",
+  "improve-codebase-architecture",
+  "prototype",
+  "research",
+  "resolving-merge-conflicts",
+  "setup-matt-pocock-skills",
+  "tdd",
+  "teach",
+  "to-questionnaire",
+  "to-spec",
+  "to-tickets",
+  "triage",
+  "wait-what",
+  "wayfinder",
+  "wizard",
+  "writing-for-agents",
+]
+
+# Fork of Jesse Vincent's superpowers collection.
+[[source]]
+repository = "https://github.com/lsimons/superpowers"
+prefix = "s-"
+license = "MIT"
+copyright = "Copyright (c) 2025 Jesse Vincent"
+skills = [
+  "brainstorming",
+  "dispatching-parallel-agents",
+  "executing-plans",
+  "finishing-a-development-branch",
+  "receiving-code-review",
+  "requesting-code-review",
+  "subagent-driven-development",
+  "systematic-debugging",
+  "test-driven-development",
+  "using-git-worktrees",
+  "using-superpowers",
+  "verification-before-completion",
+  "writing-plans",
+  "writing-skills",
+]
+
+# Schuberg Philis engineering skills. Most already carry the prefix; the
+# three that do not gain it.
+#
+# `sbp-brandbook` is deliberately absent: it is proprietary Schuberg Philis
+# content under its own license, which forbids redistribution outside the
+# sbp-skills repository, and it bundles commercially licensed TypeType fonts.
+# Load it from a local sbp-skills checkout instead of vendoring it here.
+[[source]]
+repository = "https://github.com/lsimons/sbp-skills"
+prefix = "sbp-"
+license = "Apache-2.0"
+copyright = "Copyright Schuberg Philis"
+skills = [
+  "mcaf-module",
+  "review-mcaf",
+  "sbp-agent-architecture-review",
+  "sbp-architecture-review",
+  "sbp-debug-investigation",
+  "sbp-dependency-audit",
+  "sbp-deploy-checklist",
+  "sbp-explain-codebase",
+  "sbp-feature-development",
+  "sbp-incident-review",
+  "sbp-observability-check",
+  "sbp-refactor",
+  "sbp-runbook-author",
+  "sbp-safe-change",
+  "sbp-secure-code-review",
+  "sbp-test-authoring",
+  "sbp-test-planning",
+  "sbp-threat-model",
+  "sbp-why-we-do-this",
+  "terraform",
+]

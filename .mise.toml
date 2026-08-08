@@ -16,12 +16,16 @@ description = "uv sync (all groups)"
 run = "uv sync --all-groups"
 
 [tasks.skills-update]
-description = "Re-fetch every skill declared in upstream-skills.txt"
-run = "uv run python -m scripts.update_skills --update"
+description = "Re-fetch every skill declared in upstream-skills.toml and replay skill-rewrites.toml"
+run = "uv run python -m scripts.update_skills --update --prune"
 
 [tasks.skills-install]
-description = "Fetch only the skills from upstream-skills.txt that are missing"
+description = "Fetch only the skills from upstream-skills.toml that are missing"
 run = "uv run python -m scripts.update_skills"
+
+[tasks.skills-refs]
+description = "List every surviving reference to a renamed skill's upstream name (triage worklist)"
+run = "uv run python -m scripts.references"
 
 [tasks.lint]
 description = "ruff check + ruff format --check"
