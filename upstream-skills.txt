@@ -47,3 +47,30 @@ https://github.com/lsimons/osmani-agent-skills source-driven-development
 https://github.com/lsimons/osmani-agent-skills spec-driven-development
 https://github.com/lsimons/osmani-agent-skills test-driven-development
 https://github.com/lsimons/osmani-agent-skills using-agent-skills
+
+# Schuberg Philis engineering skills (Apache 2.0).
+#
+# `sbp-brandbook` is deliberately absent: it is proprietary Schuberg Philis
+# content under its own license, which forbids redistribution outside the
+# sbp-skills repository, and it bundles commercially licensed TypeType fonts.
+# Load it from ~/git/lsimons/sbp-skills directly instead of vendoring it here.
+https://github.com/lsimons/sbp-skills mcaf-module
+https://github.com/lsimons/sbp-skills review-mcaf
+https://github.com/lsimons/sbp-skills sbp-agent-architecture-review
+https://github.com/lsimons/sbp-skills sbp-architecture-review
+https://github.com/lsimons/sbp-skills sbp-debug-investigation
+https://github.com/lsimons/sbp-skills sbp-dependency-audit
+https://github.com/lsimons/sbp-skills sbp-deploy-checklist
+https://github.com/lsimons/sbp-skills sbp-explain-codebase
+https://github.com/lsimons/sbp-skills sbp-feature-development
+https://github.com/lsimons/sbp-skills sbp-incident-review
+https://github.com/lsimons/sbp-skills sbp-observability-check
+https://github.com/lsimons/sbp-skills sbp-refactor
+https://github.com/lsimons/sbp-skills sbp-runbook-author
+https://github.com/lsimons/sbp-skills sbp-safe-change
+https://github.com/lsimons/sbp-skills sbp-secure-code-review
+https://github.com/lsimons/sbp-skills sbp-test-authoring
+https://github.com/lsimons/sbp-skills sbp-test-planning
+https://github.com/lsimons/sbp-skills sbp-threat-model
+https://github.com/lsimons/sbp-skills sbp-why-we-do-this
+https://github.com/lsimons/sbp-skills terraform

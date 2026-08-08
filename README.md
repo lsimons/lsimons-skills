@@ -70,9 +70,21 @@ MIT-licensed except the skills listed below.
 | --- | --- | --- |
 | `agent-browser` | [vercel-labs/agent-browser](https://github.com/vercel-labs/agent-browser) | Copyright 2025 Vercel Inc. |
 | `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | ? |
+| `mcaf-module`, `review-mcaf`, `sbp-*`, `terraform` | [lsimons/sbp-skills](https://github.com/lsimons/sbp-skills) | Copyright Schuberg Philis |
+
+That upstream ships a `NOTICE`; the parts of it that apply here are recorded
+in [NOTICE](./NOTICE).
 
 **MIT** — everything else. Upstream copyright holders are listed in
 [LICENSE](./LICENSE).
+
+### Not vendored
+
+`sbp-brandbook` from [lsimons/sbp-skills](https://github.com/lsimons/sbp-skills)
+is deliberately absent from `upstream-skills.txt`. It is proprietary Schuberg
+Philis content under its own license, which forbids redistribution outside that
+repository, and it bundles commercially licensed TypeType fonts. Point an agent
+at a local sbp-skills checkout if you need it.
 
 ## Contributing
 
