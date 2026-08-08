@@ -2,8 +2,7 @@
 
 > This file (`AGENTS.md`) is the canonical agent configuration. `CLAUDE.md` is a symlink to this file.
 
-A collection of agent skills: Markdown skill definitions plus their
-supporting Python scripts.
+A collection of agent skills: Markdown skill definitions plus their supporting Python scripts.
 
 ## Quick Reference
 

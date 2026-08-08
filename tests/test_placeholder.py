@@ -2,7 +2,7 @@
 
 import pytest
 
-from skills.scripts import greet
+from scripts import greet
 
 
 def test_greet_returns_greeting() -> None:

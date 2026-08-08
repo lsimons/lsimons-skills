@@ -19,7 +19,7 @@ select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 [tool.basedpyright]
 pythonVersion = "3.14"
 typeCheckingMode = "strict"
-include = ["skills/scripts", "tests"]
+include = ["scripts", "skills", "tests"]
 exclude = [".venv/**", "**/__pycache__/**"]
 
 [dependency-groups]
