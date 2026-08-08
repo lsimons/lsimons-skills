@@ -72,9 +72,6 @@ MIT-licensed except the skills listed below.
 | `frontend-design` | [anthropics/skills](https://github.com/anthropics/skills) | ? |
 | `mcaf-module`, `review-mcaf`, `sbp-*`, `terraform` | [lsimons/sbp-skills](https://github.com/lsimons/sbp-skills) | Copyright Schuberg Philis |
 
-That upstream ships a `NOTICE`; the parts of it that apply here are recorded
-in [NOTICE](./NOTICE).
-
 **MIT** — everything else. Upstream copyright holders are listed in
 [LICENSE](./LICENSE).
 

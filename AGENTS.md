@@ -49,8 +49,10 @@ Because skills are vendored, licensing is this repository's problem. Adding an
 entry to `upstream-skills.txt` means checking its upstream license and updating
 the "Licensing" section of `README.md` plus `LICENSE`. Most skills are MIT;
 `agent-browser`, `frontend-design` and the sbp-skills set are Apache 2.0
-(`APACHE-LICENSE`). When an Apache-licensed upstream ships a `NOTICE`, the
-applicable parts belong in the root `NOTICE`.
+(`APACHE-LICENSE`). If an Apache-licensed upstream ever ships a `NOTICE` with
+content that applies to what we vendor, that content must be merged into a
+root `NOTICE`. sbp-skills ships one, but it covers only `sbp-brandbook`, which
+we do not vendor — so no root `NOTICE` is needed.
 
 Not every upstream skill is vendorable. `sbp-brandbook` is proprietary
 Schuberg Philis content that forbids redistribution outside its own
