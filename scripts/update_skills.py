@@ -27,7 +27,7 @@ from pathlib import Path
 from scripts.console import dry, error, info, success, warn
 from scripts.frontmatter import FrontmatterError, apply_fields, render, set_field
 from scripts.manifest import Manifest, SkillEntry, load_manifest
-from scripts.paths import SKILLS_DIR
+from scripts.paths import DISABLED_DIR, SKILLS_DIR
 from scripts.references import Reference, group_by_skill, scan_references
 from scripts.rewrites import RewriteRules, apply_rewrites, load_rewrites
 from scripts.shell import command_exists, npm_install_global, run
@@ -45,6 +45,18 @@ AGENT_BROWSER_SKILL = "agent-browser"
 
 # How many example lines to print per renamed skill in the reference report.
 REPORT_SAMPLE = 3
+
+
+def skill_dir(local_name: str, *, enabled: bool) -> Path:
+    """Return where a skill belongs: `skills/<name>` if enabled, else `disabled/<name>`.
+
+    Whether a skill is active is a manifest decision (the `enabled` field,
+    defaulting to false), not a filesystem one — this is the single place
+    that turns that decision into a path, so fetching and migration agree.
+    """
+    if enabled:
+        return SKILLS_DIR / local_name
+    return DISABLED_DIR / local_name
 
 
 def skills_command() -> list[str]:
@@ -154,9 +166,13 @@ def fetch_skill(entry: SkillEntry, staging: Path, rules: RewriteRules) -> bool:
         error(f"skills CLI did not produce {fetched}")
         return False
 
-    destination = SKILLS_DIR / entry.local_name
+    destination = skill_dir(entry.local_name, enabled=entry.enabled)
+    stale = skill_dir(entry.local_name, enabled=not entry.enabled)
+    if stale.exists():
+        shutil.rmtree(stale)
     if destination.exists():
         shutil.rmtree(destination)
+    destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.move(str(fetched), str(destination))
 
     skill_md = destination / "SKILL.md"
@@ -180,7 +196,7 @@ def pending_skills(entries: list[SkillEntry], *, update: bool) -> list[SkillEntr
 
     pending: list[SkillEntry] = []
     for entry in entries:
-        if (SKILLS_DIR / entry.local_name).is_dir():
+        if skill_dir(entry.local_name, enabled=entry.enabled).is_dir():
             success(f"Skill already present: {entry.local_name}")
         else:
             pending.append(entry)
@@ -218,22 +234,51 @@ def fetch_skills(
     return ok
 
 
+def _candidate_skill_dirs(root: Path) -> list[Path]:
+    """List directories directly under `root` that could each be one skill."""
+    if not root.is_dir():
+        return []
+    return [p for p in root.iterdir() if p.is_dir() and not p.is_symlink()]
+
+
 def undeclared_skills(manifest: Manifest) -> list[Path]:
     """Return skill directories that the manifest does not account for.
 
-    Symlinks are skipped. A symlinked skill directory is not vendored here —
-    it points at a checkout elsewhere, deliberately outside the manifest (see
-    `skills/sbp-brandbook`) — so reporting it is noise, and `--prune` would
-    only crash on it, since `shutil.rmtree` refuses a symlink.
+    Checks both `skills/` and `disabled/`, since a skill lives in one or the
+    other depending on its `enabled` state. Symlinks are skipped. A symlinked
+    skill directory is not vendored here — it points at a checkout elsewhere,
+    deliberately outside the manifest (see `skills/sbp-brandbook`) — so
+    reporting it is noise, and `--prune` would only crash on it, since
+    `shutil.rmtree` refuses a symlink.
     """
-    if not SKILLS_DIR.is_dir():
-        return []
     declared = manifest.declared_names
-    return sorted(
-        p
-        for p in SKILLS_DIR.iterdir()
-        if p.is_dir() and not p.is_symlink() and p.name not in declared
-    )
+    candidates = _candidate_skill_dirs(SKILLS_DIR) + _candidate_skill_dirs(DISABLED_DIR)
+    return sorted(p for p in candidates if p.name not in declared)
+
+
+def sync_skill_locations(manifest: Manifest, *, dry_run: bool = False) -> None:
+    """Move every declared skill directory to match its `enabled` state.
+
+    `enabled` is a manifest decision; the filesystem lags behind it until
+    this runs. A skill toggled off moves from `skills/<name>` to
+    `disabled/<name>`, and back again if toggled on — via `git mv`
+    equivalent, never by hand.
+    """
+    pairs = [(entry.local_name, entry.enabled) for entry in manifest.entries]
+    pairs += [(local.name, local.enabled) for local in manifest.local_skills]
+
+    for name, enabled in pairs:
+        current = skill_dir(name, enabled=not enabled)
+        target = skill_dir(name, enabled=enabled)
+        if not current.is_dir() or current.is_symlink():
+            continue
+        if dry_run:
+            dry(f"would move {current} -> {target}")
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.move(str(current), str(target))
+        state = "enabled" if enabled else "disabled"
+        success(f"Moved {current} -> {target} ({state})")
 
 
 def prune_skills(manifest: Manifest, *, prune: bool, dry_run: bool = False) -> None:
@@ -300,6 +345,7 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest = load_manifest()
     rules = load_rewrites()
+    sync_skill_locations(manifest, dry_run=args.dry_run)
     ok = fetch_skills(manifest.entries, rules, update=args.update, dry_run=args.dry_run)
     prune_skills(manifest, prune=args.prune, dry_run=args.dry_run)
 

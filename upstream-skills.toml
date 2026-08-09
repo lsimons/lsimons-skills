@@ -12,6 +12,7 @@
 #   rename      per-skill override, winning over `prefix`
 #   skills      upstream skill names to fetch
 #   frontmatter per-skill YAML frontmatter overrides, applied after the fetch
+#   enabled     per-skill table, `[source.enabled]`; see below
 #   license     upstream license; see the Licensing section of README.md
 #   copyright   upstream copyright holder(s); mirrored into LICENSE
 #
@@ -19,6 +20,12 @@
 # `disable-model-invocation`: whether an agent can fire a skill by itself is a
 # vendoring decision, and upstream packs other than Matt Pocock's never make
 # it. See AGENTS.md for when to set it.
+#
+# `enabled` decides whether a skill lives under `skills/` or `disabled/`, and
+# defaults to false: only skills listed with `enabled = true` (here on
+# `local-enabled`, or on a source's `[source.enabled]`) stay active;
+# everything else moves to `disabled/<name>`. `mise run skills-update`
+# performs the move — never `mv` a skill by hand.
 #
 # Prefixes exist because skill names are a flat global namespace and packs
 # collide: superpowers and osmani-agent-skills both ship a
@@ -28,6 +35,10 @@
 
 # Hand-maintained here, never fetched and never pruned.
 local = ["1password", "claude-history", "leo-auto", "leo-bot", "python-knowledge-patch"]
+
+[local-enabled]
+1password = true
+python-knowledge-patch = true
 
 [[source]]
 repository = "https://github.com/vercel-labs/skills"

@@ -42,10 +42,18 @@ so run the tooling as a module from the repository root:
 
 Everything under `skills/` is committed, including skills fetched from
 skills.sh. `upstream-skills.toml` declares what is fetched; skills listed
-under `local` there (`1password`, `claude-history`, `leo-bot`,
+under `local` there (`1password`, `claude-history`, `leo-auto`, `leo-bot`,
 `python-knowledge-patch`) are maintained by hand and the fetcher leaves them
 alone. Anything under `skills/` that the manifest does not declare is
 reported on every run, and `--prune` deletes it.
+
+Every skill also has an `enabled` flag, defaulting to `false`: enabled skills
+live at `skills/<name>`, everything else at `disabled/<name>`. Set it
+with `[source.enabled]` on a `[[source]]` (keyed by upstream name) or with
+`[local-enabled]` at the top level (keyed by local name) — see the comment
+block at the top of `upstream-skills.toml`. `mise run skills-update` (via
+`sync_skill_locations` in `scripts/update_skills.py`) moves a skill's
+directory to match its `enabled` state every run; never `mv` one by hand.
 
 `leo-bot` is the cross-pack router — OpenSpec first when the repo has an
 `openspec/` directory, then `sbp-*` for mission-critical work, then exactly

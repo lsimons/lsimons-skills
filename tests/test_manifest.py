@@ -5,8 +5,9 @@ from pathlib import Path
 import pytest
 
 from scripts.frontmatter import field_value, render
-from scripts.manifest import SkillEntry, load_manifest, local_name_for
-from scripts.paths import SKILLS_DIR, UPSTREAM_MANIFEST
+from scripts.manifest import LocalSkill, SkillEntry, load_manifest, local_name_for
+from scripts.paths import UPSTREAM_MANIFEST
+from scripts.update_skills import skill_dir, undeclared_skills
 
 MINIMAL_SOURCE = """
 [[source]]
@@ -68,9 +69,54 @@ def test_rename_overrides_prefix(tmp_path: Path) -> None:
 
 def test_local_skills_are_declared_but_not_fetched(tmp_path: Path) -> None:
     manifest = load_manifest(write_manifest(tmp_path, 'local = ["by-hand"]\n' + MINIMAL_SOURCE))
-    assert manifest.local_skills == ["by-hand"]
+    assert manifest.local_skills == [LocalSkill("by-hand")]
     assert "by-hand" not in {e.local_name for e in manifest.entries}
     assert manifest.declared_names == {"by-hand", "first", "second"}
+    assert manifest.enabled_names == set()
+
+
+def test_local_skills_enabled_defaults_to_false(tmp_path: Path) -> None:
+    manifest = load_manifest(write_manifest(tmp_path, 'local = ["by-hand"]\n' + MINIMAL_SOURCE))
+    assert manifest.local_skills[0].enabled is False
+
+
+def test_local_skills_enabled_can_be_declared(tmp_path: Path) -> None:
+    content = 'local = ["by-hand"]\n[local-enabled]\nby-hand = true\n' + MINIMAL_SOURCE
+    manifest = load_manifest(write_manifest(tmp_path, content))
+    assert manifest.local_skills == [LocalSkill("by-hand", True)]
+    assert manifest.enabled_names == {"by-hand"}
+
+
+def test_local_enabled_rejects_a_skill_not_in_local(tmp_path: Path) -> None:
+    content = 'local = ["by-hand"]\n[local-enabled]\nother = true\n' + MINIMAL_SOURCE
+    with pytest.raises(ValueError, match=r"'local-enabled' for skills not listed in 'local'"):
+        load_manifest(write_manifest(tmp_path, content))
+
+
+def test_source_enabled_defaults_to_false(tmp_path: Path) -> None:
+    manifest = load_manifest(write_manifest(tmp_path, MINIMAL_SOURCE))
+    assert [e.enabled for e in manifest.entries] == [False, False]
+
+
+def test_source_enabled_can_be_declared(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + "[source.enabled]\nfirst = true\n"
+    manifest = load_manifest(write_manifest(tmp_path, content))
+    first, second = manifest.entries
+    assert first.enabled is True
+    assert second.enabled is False
+    assert manifest.enabled_names == {"first"}
+
+
+def test_source_enabled_rejects_a_skill_not_listed(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + "[source.enabled]\nthird = true\n"
+    with pytest.raises(ValueError, match=r"enabled for skills not listed: \['third'\]"):
+        load_manifest(write_manifest(tmp_path, content))
+
+
+def test_source_enabled_rejects_a_non_boolean_value(tmp_path: Path) -> None:
+    content = MINIMAL_SOURCE + '[source.enabled]\nfirst = "yes"\n'
+    with pytest.raises(ValueError, match="enabled\\['first'\\] must be a boolean"):
+        load_manifest(write_manifest(tmp_path, content))
 
 
 def test_empty_manifest_yields_no_entries(tmp_path: Path) -> None:
@@ -150,10 +196,14 @@ def test_local_name_for(name: str, prefix: str, expected: str) -> None:
 
 
 def test_real_manifest_is_parseable_and_fully_vendored() -> None:
-    """Every declared skill must be committed under skills/."""
+    """Every declared skill must be committed under skills/, at its declared location."""
     manifest = load_manifest(UPSTREAM_MANIFEST)
     assert manifest.entries, "expected at least one declared skill"
-    missing = sorted(n for n in manifest.declared_names if not (SKILLS_DIR / n).is_dir())
+    missing = sorted(
+        n
+        for n in manifest.declared_names
+        if not skill_dir(n, enabled=n in manifest.enabled_names).is_dir()
+    )
     assert missing == []
 
 
@@ -162,15 +212,10 @@ def test_real_manifest_declares_every_vendored_skill() -> None:
 
     Symlinks are excluded, matching `update_skills.undeclared_skills`: a
     symlinked skill points at another checkout and is out of the manifest on
-    purpose.
+    purpose. `disabled/` holds toggled-off skills, not a skill itself.
     """
-    declared = load_manifest(UPSTREAM_MANIFEST).declared_names
-    undeclared = sorted(
-        p.name
-        for p in SKILLS_DIR.iterdir()
-        if p.is_dir() and not p.is_symlink() and p.name not in declared
-    )
-    assert undeclared == []
+    manifest = load_manifest(UPSTREAM_MANIFEST)
+    assert undeclared_skills(manifest) == []
 
 
 def test_real_manifest_frontmatter_overrides_are_applied_to_the_vendored_tree() -> None:
@@ -179,11 +224,13 @@ def test_real_manifest_frontmatter_overrides_are_applied_to_the_vendored_tree() 
     `skills/` is committed, so an override could otherwise drift out of the
     tree — by a hand edit, or by declaring one without re-fetching.
     """
-    for entry in load_manifest(UPSTREAM_MANIFEST).entries:
+    manifest = load_manifest(UPSTREAM_MANIFEST)
+    for entry in manifest.entries:
         fields = entry.frontmatter_fields
         if not fields:
             continue
-        text = (SKILLS_DIR / entry.local_name / "SKILL.md").read_text()
+        destination = skill_dir(entry.local_name, enabled=entry.enabled)
+        text = (destination / "SKILL.md").read_text()
         for key, value in fields.items():
             assert field_value(text, key) == render(value), (
                 f"{entry.local_name} declares '{key}' but its SKILL.md does not match; "

@@ -5,13 +5,15 @@ from pathlib import Path
 import pytest
 
 from scripts import update_skills
-from scripts.manifest import Manifest, SkillEntry, Source
+from scripts.manifest import LocalSkill, Manifest, SkillEntry, Source
 from scripts.references import Reference
 from scripts.rewrites import RewriteRules
 
-ENTRY = SkillEntry("https://example.com/repo", "demo-skill", "demo-skill")
-RENAMED = SkillEntry("https://example.com/repo", "demo-skill", "x-demo-skill")
-BROWSER_ENTRY = SkillEntry("https://example.com/agent-browser", "agent-browser", "agent-browser")
+ENTRY = SkillEntry("https://example.com/repo", "demo-skill", "demo-skill", enabled=True)
+RENAMED = SkillEntry("https://example.com/repo", "demo-skill", "x-demo-skill", enabled=True)
+BROWSER_ENTRY = SkillEntry(
+    "https://example.com/agent-browser", "agent-browser", "agent-browser", enabled=True
+)
 NO_RULES: RewriteRules = {}
 
 
@@ -205,7 +207,7 @@ def test_pending_skills_skips_present_directories(
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
     (tmp_path / "present").mkdir()
 
-    entries = [SkillEntry("https://example.com/a", "present", "present"), ENTRY]
+    entries = [SkillEntry("https://example.com/a", "present", "present", enabled=True), ENTRY]
     assert update_skills.pending_skills(entries, update=False) == [ENTRY]
 
 
@@ -224,7 +226,7 @@ def test_pending_skills_returns_everything_when_updating(
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
     (tmp_path / "present").mkdir()
 
-    entries = [SkillEntry("https://example.com/a", "present", "present"), ENTRY]
+    entries = [SkillEntry("https://example.com/a", "present", "present", enabled=True), ENTRY]
     assert update_skills.pending_skills(entries, update=True) == entries
 
 
@@ -419,13 +421,14 @@ def test_fetch_skills_reports_a_failed_fetch(
 
 def make_manifest(*local: str) -> Manifest:
     source = Source("https://example.com/repo", "", "MIT", "Copyright (c) 2026 Nobody", [ENTRY])
-    return Manifest(sources=[source], local_skills=list(local))
+    return Manifest(sources=[source], local_skills=[LocalSkill(name) for name in local])
 
 
 def test_undeclared_skills_ignores_declared_and_hand_maintained_directories(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     for name in (ENTRY.local_name, "by-hand", "leftover"):
         (tmp_path / name).mkdir()
 
@@ -439,6 +442,7 @@ def test_undeclared_skills_ignores_symlinked_directories(
 ) -> None:
     """A symlinked skill lives in another checkout and is not ours to prune."""
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path / "skills")
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     (tmp_path / "skills").mkdir()
     elsewhere = tmp_path / "elsewhere" / "linked"
     elsewhere.mkdir(parents=True)
@@ -451,7 +455,101 @@ def test_undeclared_skills_tolerates_a_missing_skills_dir(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path / "absent")
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     assert update_skills.undeclared_skills(make_manifest()) == []
+
+
+def setup_skills_and_disabled_dirs(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> tuple[Path, Path]:
+    """Point SKILLS_DIR and DISABLED_DIR at two sibling directories under tmp_path."""
+    skills_dir = tmp_path / "skills"
+    disabled_dir = tmp_path / "disabled"
+    monkeypatch.setattr(update_skills, "SKILLS_DIR", skills_dir)
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", disabled_dir)
+    return skills_dir, disabled_dir
+
+
+def test_undeclared_skills_checks_both_skills_and_disabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    skills_dir, disabled_dir = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    skills_dir.mkdir()
+    disabled_dir.mkdir()
+    (skills_dir / "leftover-enabled").mkdir()
+    (disabled_dir / "by-hand").mkdir()
+    (disabled_dir / "leftover-disabled").mkdir()
+
+    assert [p.name for p in update_skills.undeclared_skills(make_manifest("by-hand"))] == [
+        "leftover-disabled",
+        "leftover-enabled",
+    ]
+
+
+def test_skill_dir_returns_the_top_level_path_when_enabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    skills_dir, _ = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    assert update_skills.skill_dir("thing", enabled=True) == skills_dir / "thing"
+
+
+def test_skill_dir_returns_the_disabled_path_when_disabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _, disabled_dir = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    assert update_skills.skill_dir("thing", enabled=False) == disabled_dir / "thing"
+
+
+def test_sync_skill_locations_moves_a_disabled_skill_into_disabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    skills_dir, disabled_dir = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    (skills_dir / "off-skill").mkdir(parents=True)
+
+    manifest = Manifest(sources=[], local_skills=[LocalSkill("off-skill", enabled=False)])
+    update_skills.sync_skill_locations(manifest)
+
+    assert not (skills_dir / "off-skill").exists()
+    assert (disabled_dir / "off-skill").is_dir()
+
+
+def test_sync_skill_locations_moves_an_enabled_skill_out_of_disabled(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    skills_dir, disabled_dir = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    (disabled_dir / "on-skill").mkdir(parents=True)
+
+    manifest = Manifest(sources=[], local_skills=[LocalSkill("on-skill", enabled=True)])
+    update_skills.sync_skill_locations(manifest)
+
+    assert not (disabled_dir / "on-skill").exists()
+    assert (skills_dir / "on-skill").is_dir()
+
+
+def test_sync_skill_locations_dry_run_changes_nothing(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    skills_dir, _ = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    (skills_dir / "off-skill").mkdir(parents=True)
+
+    manifest = Manifest(sources=[], local_skills=[LocalSkill("off-skill", enabled=False)])
+    update_skills.sync_skill_locations(manifest, dry_run=True)
+
+    assert (skills_dir / "off-skill").is_dir()
+    assert "would move" in capsys.readouterr().out
+
+
+def test_sync_skill_locations_is_a_no_op_when_already_in_place(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    skills_dir, disabled_dir = setup_skills_and_disabled_dirs(monkeypatch, tmp_path)
+    (skills_dir / "on-skill").mkdir(parents=True)
+
+    manifest = Manifest(sources=[], local_skills=[LocalSkill("on-skill", enabled=True)])
+    update_skills.sync_skill_locations(manifest)
+
+    assert (skills_dir / "on-skill").is_dir()
+    assert not disabled_dir.exists()
 
 
 def test_prune_only_warns_without_the_flag(
@@ -459,6 +557,7 @@ def test_prune_only_warns_without_the_flag(
 ) -> None:
     """A stray directory could be a hand-maintained skill; never delete silently."""
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     (tmp_path / "leftover").mkdir()
 
     update_skills.prune_skills(make_manifest(), prune=False)
@@ -471,6 +570,7 @@ def test_prune_deletes_undeclared_directories(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     (tmp_path / "leftover").mkdir()
 
     update_skills.prune_skills(make_manifest(), prune=True)
@@ -482,6 +582,7 @@ def test_prune_dry_run_deletes_nothing(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     monkeypatch.setattr(update_skills, "SKILLS_DIR", tmp_path)
+    monkeypatch.setattr(update_skills, "DISABLED_DIR", tmp_path / "absent-disabled")
     (tmp_path / "leftover").mkdir()
 
     update_skills.prune_skills(make_manifest(), prune=True, dry_run=True)
@@ -525,6 +626,14 @@ def test_main_dry_run_succeeds_against_the_real_manifest(
 
 def test_main_returns_nonzero_when_a_fetch_fails(monkeypatch: pytest.MonkeyPatch) -> None:
     stub_commands(monkeypatch, present=True)
+
+    # A non-dry-run `main()` also calls `sync_skill_locations` against the
+    # real manifest; stub it so this test cannot relocate real skill
+    # directories on disk.
+    def no_sync(manifest: Manifest, *, dry_run: bool = False) -> None:
+        pass
+
+    monkeypatch.setattr(update_skills, "sync_skill_locations", no_sync)
 
     def fake(
         entries: list[SkillEntry],

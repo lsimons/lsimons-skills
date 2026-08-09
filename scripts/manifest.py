@@ -33,6 +33,7 @@ class SkillEntry(NamedTuple):
     upstream_name: str
     local_name: str
     frontmatter: tuple[tuple[str, FieldValue], ...] = ()
+    enabled: bool = False
 
     @property
     def renamed(self) -> bool:
@@ -43,6 +44,13 @@ class SkillEntry(NamedTuple):
     def frontmatter_fields(self) -> dict[str, FieldValue]:
         """The declared frontmatter overrides, as a mapping."""
         return dict(self.frontmatter)
+
+
+class LocalSkill(NamedTuple):
+    """One hand-maintained skill, and whether it is active."""
+
+    name: str
+    enabled: bool = False
 
 
 class Source(NamedTuple):
@@ -59,7 +67,7 @@ class Manifest(NamedTuple):
     """The whole manifest: fetched sources plus hand-maintained skills."""
 
     sources: list[Source]
-    local_skills: list[str]
+    local_skills: list[LocalSkill]
 
     @property
     def entries(self) -> list[SkillEntry]:
@@ -69,7 +77,16 @@ class Manifest(NamedTuple):
     @property
     def declared_names(self) -> set[str]:
         """Every skill directory this manifest accounts for, fetched or not."""
-        return {entry.local_name for entry in self.entries} | set(self.local_skills)
+        return {entry.local_name for entry in self.entries} | {
+            local.name for local in self.local_skills
+        }
+
+    @property
+    def enabled_names(self) -> set[str]:
+        """Every skill directory that should live under `skills/`, not `disabled/`."""
+        return {entry.local_name for entry in self.entries if entry.enabled} | {
+            local.name for local in self.local_skills if local.enabled
+        }
 
 
 def local_name_for(upstream_name: str, prefix: str) -> str:
@@ -131,6 +148,14 @@ def _parse_source(table: dict[str, object], index: int) -> Source:
         raise ValueError(f"{where}: 'frontmatter' must be a table")
     frontmatter = cast(dict[str, object], raw_frontmatter)
 
+    raw_enabled = table.get("enabled", {})
+    if not isinstance(raw_enabled, dict):
+        raise ValueError(f"{where}: 'enabled' must be a table")
+    enabled = cast(dict[str, object], raw_enabled)
+    for skill, value in enabled.items():
+        if not isinstance(value, bool):
+            raise ValueError(f"{where}: enabled['{skill}'] must be a boolean, got {value!r}")
+
     skills = cast(list[object], _require(table, "skills", list, where))
     entries: list[SkillEntry] = []
     names: list[str] = []
@@ -147,6 +172,7 @@ def _parse_source(table: dict[str, object], index: int) -> Source:
                 skill,
                 override or local_name_for(skill, prefix),
                 _parse_frontmatter(frontmatter.get(skill), f"{where}: frontmatter of '{skill}'"),
+                bool(enabled.get(skill, False)),
             )
         )
 
@@ -157,6 +183,10 @@ def _parse_source(table: dict[str, object], index: int) -> Source:
     unknown = sorted(set(frontmatter) - set(names))
     if unknown:
         raise ValueError(f"{where}: frontmatter for skills not listed: {unknown}")
+
+    unknown = sorted(set(enabled) - set(names))
+    if unknown:
+        raise ValueError(f"{where}: enabled for skills not listed: {unknown}")
 
     return Source(
         repository=repository,
@@ -178,11 +208,24 @@ def load_manifest(path: Path = UPSTREAM_MANIFEST) -> Manifest:
     raw_local = data.get("local", [])
     if not isinstance(raw_local, list):
         raise ValueError(f"{path}: 'local' must be a list of strings")
-    local_skills: list[str] = []
+    local_names: list[str] = []
     for name in cast(list[object], raw_local):
         if not isinstance(name, str):
             raise ValueError(f"{path}: 'local' must be a list of strings")
-        local_skills.append(name)
+        local_names.append(name)
+
+    raw_local_enabled = data.get("local-enabled", {})
+    if not isinstance(raw_local_enabled, dict):
+        raise ValueError(f"{path}: 'local-enabled' must be a table")
+    local_enabled = cast(dict[str, object], raw_local_enabled)
+    for name, value in local_enabled.items():
+        if not isinstance(value, bool):
+            raise ValueError(f"{path}: local-enabled['{name}'] must be a boolean, got {value!r}")
+    unknown = sorted(set(local_enabled) - set(local_names))
+    if unknown:
+        raise ValueError(f"{path}: 'local-enabled' for skills not listed in 'local': {unknown}")
+
+    local_skills = [LocalSkill(name, bool(local_enabled.get(name, False))) for name in local_names]
 
     raw_sources = data.get("source", [])
     if not isinstance(raw_sources, list):
@@ -201,7 +244,7 @@ def load_manifest(path: Path = UPSTREAM_MANIFEST) -> Manifest:
 
 def _reject_duplicates(manifest: Manifest, path: Path) -> None:
     """Fail if two declarations claim the same directory under `skills/`."""
-    seen: dict[str, str] = dict.fromkeys(manifest.local_skills, "local")
+    seen: dict[str, str] = dict.fromkeys((local.name for local in manifest.local_skills), "local")
     for entry in manifest.entries:
         previous = seen.get(entry.local_name)
         if previous is not None:
