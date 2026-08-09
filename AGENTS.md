@@ -42,7 +42,7 @@ so run the tooling as a module from the repository root:
 
 Everything under `skills/` is committed, including skills fetched from
 skills.sh. `upstream-skills.toml` declares what is fetched; skills listed
-under `local` there (`1password`, `claude-history`, `leo-auto`, `leo-bot`,
+under `local` there (`1password`, `claude-history`, `complete`, `leo-bot`,
 `python-knowledge-patch`) are maintained by hand and the fetcher leaves them
 alone. Anything under `skills/` that the manifest does not declare is
 reported on every run, and `--prune` deletes it.
@@ -178,33 +178,7 @@ Follow [Conventional Commits](https://conventionalcommits.org/):
 
 ## Session Completion
 
-Work is NOT complete until every change is committed, pushed, and CI passes.
-
-1. **Quality gates** (if code changed):
-   ```bash
-   mise run ci
-   ```
-
-2. **Commit**: stage and commit every change from this session. Do not leave the working tree dirty.
-   ```bash
-   git status              # review untracked and unstaged files
-   git add <files>
-   git commit -m "<type>(<scope>): <description>"
-   ```
-
-3. **Push**:
-   ```bash
-   git pull --rebase && git push
-   git status  # must show "up to date with origin"
-   ```
-
-4. **Verify CI**:
-   ```bash
-   mise run ci-watch
-   ```
-   On failure, inspect with `gh run view --log-failed`, fix, commit, push, and re-watch.
-
-Never stop before CI is green. If anything fails, resolve and retry.
+Use `/complete`, available at [skills/complete/SKILL.md](./skills/complete/SKILL.md).
 
 # Licensing
 

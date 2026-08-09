@@ -1,7 +1,6 @@
 ---
 name: complete
 description: Executes the current engineering task hands-off through git commit, push, CI and local cleanup.
-disable-model-invocation: true
 ---
 
 # Complete
@@ -52,38 +51,19 @@ ls scripts || echo no scripts dir
 
 ## The process
 
-Continue working until the task is complete.
-
-Usually that means all changes are committed on a new branch, the branch is pushed to the origin remote, a PR or MR is made for that branch, and CI reports that PR or MR is green.
-
-If the current project specifies it is not using branches/PRs/MRs, it usually means the commits are pushed on the main branch and CI reports that CI on the main branch is green.
-
-If the user specified it, completing the task may additionally mean that the green PR/MR should be merged, the new main CI is green, the local main checkout is updated, and any associated local git worktree is removed.
+Usually: commit on a new branch, push, open a PR/MR, wait for it to go green. If the project doesn't use branches/PRs, commit and push straight to main and watch main's CI instead. If the user asked for it, also merge, update local main, and clean up the worktree.
 
 Detailed workflow:
 
-1. **Quality gates**: test your changes are good.
+1. **Quality gates**: use the repo's own gate command if documented (e.g. `mise run ci`), else what you detected above. If there is no automated quality gate and you changed code, stop.
 
-   * Use this repo's own gate command if one is documented (like `mise run ci`), or use the commands you discovered.
-   * If there is no good automated quality gate, and you changed code, stop.
-
-2. **Branch**: if using a branch workflow and you are not on a branch yet:
+2. **Branch**: if using a branch workflow and not on a branch yet:
 
    ```bash
    git checkout -b <type>/(<issue>-)<slug>
    ```
 
-3. **Commit**: stage and commit every change from this session. Do not leave the working tree dirty.
-
-   ```bash
-   git status
-   git add <files>
-   git commit -m "<type>(<scope>): <description>"
-   ```
-
-   * Check what is being staged.
-   * Unless you are in a private worktree, do not blindly use `git add -A` / `git add .`. 
-   * Make sure you are not adding or committing anything that could be a secrets.
+3. **Commit**: stage and commit every change from this session, don't leave the working tree dirty. Check what's being staged before committing — no blind `git add -A`/`git add .` unless in a private worktree, and make sure nothing that looks like a secret is going in.
 
 4. **Push**:
 
@@ -91,70 +71,45 @@ Detailed workflow:
       ```bash
       git push -u <remote> <branch-name>
       ```
-   * Later pushes: 
+   * Later pushes:
       ```bash
       git pull --rebase && git push
       ```
-   * If using plain Git / no remote CI is configured, stop here.
+   * Plain Git with no remote CI configured: stop here.
 
 5. **Verify CI**:
 
-   * Use the CLI picked above:
-       * Repository tool: for example `mise run ci-watch`
-       * GitHub:
-           ```bash
-           gh pr checks --watch
-           gh run list
-           gh run view <id> --log-failed  # on failure
-           ```
-       * GitLab:
-           ```bash
-           glab ci status --wait
-           glab ci status   # on failure
-           ```
-       * Plain git: no hosted CI to check — stop here
-   * Sometimes CI may take a moment to start, if no checks/status, sleep a bit, try again.
-   * On failure, inspect the log, fix, commit, push, and re-watch.
-   * Never mark the task done on red CI.
-   * Never stop before CI is green.
-   * If anything fails, resolve and retry rather than reporting partial success.
+   * Repository tool: e.g. `mise run ci-watch`
+   * GitHub:
+       ```bash
+       gh pr checks --watch
+       gh run view <id> --log-failed  # on failure
+       ```
+   * GitLab:
+       ```bash
+       glab ci status --wait
+       glab ci status   # on failure
+       ```
+   * Plain git: no hosted CI to check — stop here.
+   * CI can take a moment to start; if there's nothing to watch yet, wait and retry.
+   * On failure: inspect the log, fix, commit, push, re-watch. Don't stop before CI is green, and don't rationalize a failure as unrelated to your change.
    * Stop here unless the instruction is to merge.
 
 6. **Merge**:
 
-   * Use the CLI picked above:
-       * Github Stack: `gh stack merge <id> --yes --rebase`
-       * GitHub PR: `gh pr merge <id> --rebase`
-       * GitLab MR: `glab mr merge <id> --rebase`
+   * Github Stack: `gh stack merge <id> --yes --rebase`
+   * GitHub PR: `gh pr merge <id> --rebase`
+   * GitLab MR: `glab mr merge <id> --rebase`
+   * Only merge once CI is green — never on red or still-running CI.
 
 7. **Update local main**:
 
-   * Exit worktree, if any:
-       * `ExitWorktree` tool if `EnterWorktree` tool was used
-       * `pwd && git worktree list` check otherwise
-          * `cd <main-repo-dir>`
-   * `git status && git branch --show-current` should report `main`
-       * If there are local changes you can't pull local main. Report this.
-       * Do not stash any changes on the main worktree, because parallel work may be ongoing.
-   * `git pull --ff-only origin main` to get the merged changes locally
-   * `git worktree remove <worktree-dir>` if needed
+   * Exit worktree, if any: `ExitWorktree` tool if `EnterWorktree` tool was used, otherwise `git worktree list` + `cd <main-repo-dir>`.
+   * Confirm `git branch --show-current` reports `main` and there are no local changes (if there are, you can't pull — report it; don't stash on the main worktree, parallel work may be ongoing).
+   * `git pull --ff-only origin main`
+   * `git worktree remove <worktree-dir>` if needed.
 
-8. **Verify on-merge CI**:
-
-   * Use the CLI picked above:
-       * Repository tool: for example `mise run ci-watch`
-       * GitHub: `gh run list` / `gh run view --log-failed` on failure
-       * GitLab: `glab ci view` / `glab ci status` on failure
-   * Always report any CI failures on `main`.
-   * If a CI failure on `main` is clearly caused by your changes and is easy to fix, restart the workflow to fix that issue.
-
-## Things not to do
-
-* Do not commit with `git add -A` without having looked at `git status` first
-* Do not decide on your own tooling when there are user instructions around tool use
-* Do not amend commits, force-pushing to remotes, skipping hooks to avoid failures
-* Do not reason that a failure is not your fault and then skip over the failure
-* Do not merge when CI is not running, when CI is still running, or when CI is red
+8. **Verify on-merge CI**: same commands as step 5, against `main`. Always report any failure. If it's clearly caused by your change and easy to fix, restart the workflow.
 
 ## Verification
 
