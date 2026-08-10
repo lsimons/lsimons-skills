@@ -28,7 +28,7 @@ All these labels should exist:
 | ready-for-human | Requires human implementation                  | #e6e6fa |
 | wontfix         | This will not be worked on                     | #ffffff |
 
-If they do not exist ask the user to confirm whether they should be created. If the user approves, create the additional labels:
+If some do not exist, list the missing ones and lead with the recommendation — "these five are missing; create them? (recommended: yes)" — so the user can accept in a word. If the user approves, create the additional labels:
 * Command for gh: `gh label create <label> -c "NNNNNN" -d "<desc>"`
 * Command for glab: `glab label create --name <label> -c "#NNNNNN" -d "<desc>"`
 

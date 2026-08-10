@@ -1,6 +1,6 @@
 # How to set up contribution guides in git projects
 
-If the project has no contribution guide that should be added.
+If the project has no contribution guide that should be added. If it has one that no longer describes how the project actually takes contributions — it names a branch, a task or a review process that is gone — update it.
 
 Start with [CONTRIBUTING-template.md](../assets/CONTRIBUTING-template.md) and create a new file `CONTRIBUTING.md` in the project root.
 

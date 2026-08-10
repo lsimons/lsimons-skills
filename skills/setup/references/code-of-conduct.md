@@ -1,6 +1,6 @@
 # How to set up code of conduct files in git projects
 
-Do not change existing code of conduct files.
+Do not change existing code of conduct files. Unlike the other metadata files, this one is not checked for currency: a code of conduct is a commitment the project's humans made to their community, and rewording it is theirs to do. Leave it exactly as it is.
 
 If the project has no code of conduct that should be added.
 

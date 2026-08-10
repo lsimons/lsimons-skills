@@ -12,7 +12,17 @@ If the project is using GitHub Actions, change all GitHub actions to pin to a sp
 
 If the project is using GitHub then it should use renovate or dependabot or a similar dependency checker. If none are set up, set up dependabot. Create `.github/dependabot.yml` based on [dependabot-template.yml](../assets/dependabot-template.yml). Make sure to remove the packaging ecosystems not actually in use in this project.
 
-If the project is using Github Actions, it should have a GitHub Actions security audit set up. If none is configured, set it up using zizmor.
+If the project is using Github Actions, it should have a GitHub Actions security audit set up. If none is configured, set it up using zizmor. One invocation covers the workflows *and* the dependabot config:
+
+```bash
+GH_TOKEN=$(gh auth token 2>/dev/null) zizmor --collect=all --strict-collection .
+```
+
+`--strict-collection` turns a config that fails schema validation into a failure rather than a warning, which is how a dependabot entry missing its required `directory` / `directories` key gets caught. There is no need for a hand-rolled required-keys check.
+
+zizmor's `unpinned-uses` supersedes grepping for unpinned actions, and its `impostor-commit` audit catches a pinned SHA that is not reachable from the upstream repository's refs — something no grep can detect.
+
+`impostor-commit` and `known-vulnerable-actions` are online audits: they need a GitHub token, which is what the `GH_TOKEN` above supplies from an authenticated `gh`. Without a token zizmor prints a warning and falls back to offline, and those two audits do not run — an *unverified* result, not a pass. Do not pass `--offline` to silence the warning; that turns the fallback into the permanent state. See [verification.md](./verification.md).
 
 ## Implementing dependency management
 

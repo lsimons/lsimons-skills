@@ -1,6 +1,6 @@
 # How to set up license files in git projects
 
-Do not change existing license files.
+Do not change existing license files. Unlike the other metadata files, this one is not checked for currency: changing a project's license has legal consequences for everyone who already relied on it, and that is not an agent's call. Leave it exactly as it is, even if it looks stale.
 
 If the project has no license file that should be added.
 
@@ -10,7 +10,7 @@ If the applicable license and copyright is already clearly specified in the read
 * [Apache License, v2.0](../assets/APACHE-LICENSE.txt), renamed to `LICENSE`
 * [Proprietary License](../assets/PROPRIETARY-LICENSE-template.txt), with the <Copyright> line fixed
 
-Ask the user what license to use if not specified yet. Recommend Apache License, v2.0 if the project is public, proprietary license otherwise.
+If the license is not specified yet, lead with the recommendation so the user can accept it in a word: **Apache License, v2.0** if the project is public, **proprietary** otherwise. Ask, but ask as "Apache-2.0, since this repo is public — ok?" rather than as an open question.
 
 Ask the user what copyright line should be used, do not guess. Expect an answer like `Copyright <YYYY> <Name>`, though the specifying the year is optional.
 

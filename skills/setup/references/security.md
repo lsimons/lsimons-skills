@@ -1,6 +1,6 @@
 # How to set up security instructions in git projects
 
-If this file does not exist it means the project may receive security incident reports in various ways.
+If this file does not exist it means the project may receive security incident reports in various ways. If it exists but names a reporting route that is no longer right — a dead address, a handle that changed, private vulnerability reporting that is now enabled — update it.
 
 It would be good if the project authors can decide a preferred route for handling security.
 
