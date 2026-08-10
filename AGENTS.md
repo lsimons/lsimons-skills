@@ -90,7 +90,8 @@ using-agent-skills = { disable-model-invocation = true }
 
 It exists for `disable-model-invocation`, which decides whether an agent can
 fire a skill by itself or only a human typing its name can. The criterion is
-`skills/mp-writing-for-agents/SKILL-MECHANICS.md`: model-invocation is for
+`mp-writing-for-agents/SKILL-MECHANICS.md` — under `skills/` or `disabled/`
+depending on that skill's own `enabled` flag, as above: model-invocation is for
 skills the agent must reach on its own, or that another skill must reach.
 A model-invoked skill's `description` is loaded into every session's context
 forever, so the flag is also how context is reclaimed. Only Matt Pocock's pack
