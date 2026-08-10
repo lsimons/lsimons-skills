@@ -1,0 +1,18 @@
+Proprietary License
+
+<Copyright>. All rights reserved.
+
+This software and its source code are private and confidential.
+
+No part of this repository may be copied, modified, distributed,
+sublicensed, published, or used in any form, in whole or in part, without
+the prior written permission of the copyright holder.
+
+Access to this repository is granted to authorized personnel and other
+parties as explicitly approved by the copyright holder. All
+such access is conditional on confidentiality obligations.
+
+The software is provided "as is", without warranty of any kind, express
+or implied.
+
+For permissions or inquiries, contact the copyright holder.

@@ -1,0 +1,44 @@
+# mise: https://mise.jdx.dev/
+
+[tools]
+bun = "latest"
+
+[tasks.docs-install]
+description = "Install the site dependencies (bun)"
+dir = "docs"
+run = "bun install"
+
+[tasks.docs-dev]
+description = "Start the live-reloading dev server"
+dir = "docs"
+run = "bun run dev"
+
+[tasks.docs-build]
+description = "Build the static site into docs/dist"
+dir = "docs"
+run = "bun run build"
+
+[tasks.docs-preview]
+description = "Preview the production build"
+dir = "docs"
+run = "bun run preview"
+
+[tasks.docs-check]
+description = "Astro type/content check"
+dir = "docs"
+run = "bunx astro check"
+
+[tasks.docs-clean]
+description = "Remove build artifacts"
+run = "rm -rf docs/dist docs/.astro"
+
+[tasks.ci-watch]
+description = "Watch GitHub Actions CI for the current branch; exits non-zero on failure"
+run = """
+sleep 5
+remote_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+repo=$(echo "$remote_url" | sed -E 's|^.*github\\.com[:/]||; s|\\.git$||')
+run_id=$(gh run list --repo "$repo" --branch "$(git branch --show-current)" --limit 1 --json databaseId --jq '.[0].databaseId')
+if [ -z "$run_id" ]; then echo "No run found for current branch on $repo" >&2; exit 1; fi
+gh run watch --repo "$repo" --exit-status "$run_id"
+"""

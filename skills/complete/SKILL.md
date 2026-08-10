@@ -1,6 +1,7 @@
 ---
 name: complete
-description: Executes the current engineering task hands-off through git commit, push, CI and local cleanup.
+description: drive a task to completion
+model: sonnet
 ---
 
 # Complete
@@ -63,7 +64,7 @@ Detailed workflow:
    git checkout -b <type>/(<issue>-)<slug>
    ```
 
-3. **Commit**: stage and commit every change from this session, don't leave the working tree dirty. Check what's being staged before committing — no blind `git add -A`/`git add .` unless in a private worktree, and make sure nothing that looks like a secret is going in.
+3. **Commit**: stage and commit every change from this session, don't leave the working tree dirty. Check what's being staged before committing — no blind `git add -A`/`git add .` unless in a private worktree, and make sure nothing that looks like a secret is going in. Mention `Closes #<issue>.` if that is applicable.
 
 4. **Push**:
 

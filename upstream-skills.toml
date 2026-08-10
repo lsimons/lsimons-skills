@@ -33,13 +33,42 @@
 # other skills' prose, which is handled separately — see AGENTS.md and
 # skill-rewrites.toml.
 
-# Hand-maintained here, never fetched and never pruned.
-local = ["1password", "claude-history", "complete", "leo-bot", "python-knowledge-patch"]
+# Hand-maintained here, never fetched and never pruned. `auto` routes to the
+# phase skills it lists (`setup`, `research`, `spike`, `spec`, `build`,
+# `review`, `complete`, `flow`, `triage`, `bump`), so they are declared as a
+# set.
+local = [
+  "1password",
+  "auto",
+  "build",
+  "bump",
+  "claude-history",
+  "complete",
+  "flow",
+  "leo-bot",
+  "python-knowledge-patch",
+  "research",
+  "review",
+  "setup",
+  "spec",
+  "spike",
+  "triage",
+]
 
 [local-enabled]
 1password = true
-python-knowledge-patch = true
+auto = true
+build = true
+bump = true
 complete = true
+flow = true
+python-knowledge-patch = true
+research = true
+review = true
+setup = true
+spec = true
+spike = true
+triage = true
 
 [[source]]
 repository = "https://github.com/vercel-labs/skills"

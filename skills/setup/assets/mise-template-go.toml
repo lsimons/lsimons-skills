@@ -1,0 +1,54 @@
+# mise: https://mise.jdx.dev/
+#
+# `mise install` installs everything under [tools]; `mise run <task>`
+# wraps the native `go` / `golangci-lint` / `gofumpt` commands. go.mod's
+# `go` directive remains authoritative — mise reads it.
+
+[tools]
+go = "latest"
+golangci-lint = "latest"
+gofumpt = "latest"
+
+[env]
+_.file = { path = ".env", optional = true }
+
+[tasks.lint]
+description = "golangci-lint + gofmt check + go vet + go mod tidy check"
+run = [
+    "golangci-lint run ./...",
+    """
+    out=$(gofmt -l .)
+    if [ -n "$out" ]; then
+      echo "Unformatted files:" && echo "$out" && exit 1
+    fi
+    """,
+    "go vet ./...",
+    "go mod tidy -diff",
+]
+
+[tasks.format]
+description = "gofumpt -w ."
+run = "gofumpt -w ."
+
+[tasks.test]
+description = "go test -race -covermode=atomic"
+run = "go test -race -covermode=atomic -coverprofile=coverage.out ./..."
+
+[tasks.build]
+description = "go build ./..."
+run = "go build ./..."
+
+[tasks.ci]
+description = "Full CI gate"
+depends = ["lint", "test", "build"]
+
+[tasks.ci-watch]
+description = "Watch GitHub Actions CI for the current branch; exits non-zero on failure"
+run = """
+sleep 5
+remote_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+repo=$(echo "$remote_url" | sed -E 's|^.*github\\.com[:/]||; s|\\.git$||')
+run_id=$(gh run list --repo "$repo" --branch "$(git branch --show-current)" --limit 1 --json databaseId --jq '.[0].databaseId')
+if [ -z "$run_id" ]; then echo "No run found for current branch on $repo" >&2; exit 1; fi
+gh run watch --repo "$repo" --exit-status "$run_id"
+"""

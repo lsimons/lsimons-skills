@@ -1,0 +1,57 @@
+image: python:3.14-slim
+
+stages:
+  - test
+
+variables:
+  MISE_DATA_DIR: $CI_PROJECT_DIR/.mise
+  UV_CACHE_DIR: $CI_PROJECT_DIR/.uv-cache
+  FF_USE_FASTZIP: "true"
+  CACHE_COMPRESSION_LEVEL: "fastest"
+  TRANSFER_METER_FREQUENCY: "5s"
+
+.cache_def: &cache_def
+  key:
+    files:
+      - uv.lock
+  paths:
+    - .mise
+    - .uv-cache
+
+default:
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y -qq --no-install-recommends curl git ca-certificates
+    - curl https://mise.run | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - mise install -y python uv
+    - eval "$(mise activate bash)"
+
+warm-cache:
+  stage: test
+  cache:
+    <<: *cache_def
+    policy: push
+  script:
+    - mise run install
+    - uv cache prune --ci
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - uv.lock
+    - if: $CI_COMMIT_BRANCH == "main"
+      changes:
+        - uv.lock
+
+lint-and-test:
+  stage: test
+  cache:
+    <<: *cache_def
+    policy: pull
+  script:
+    - mise run install
+    - mise run ci
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS == null

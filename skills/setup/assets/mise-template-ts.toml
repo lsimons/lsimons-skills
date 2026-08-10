@@ -1,0 +1,51 @@
+# mise: https://mise.jdx.dev/
+#
+# `mise install` installs everything under [tools]; `mise run <task>`
+# delegates to pnpm scripts in package.json. `.nvmrc` stays authoritative —
+# mise reads it.
+
+[tools]
+node = "latest"
+pnpm = "latest"
+
+[env]
+_.file = { path = ".env", optional = true }
+
+[tasks.install]
+description = "pnpm install --frozen-lockfile"
+run = "pnpm install --frozen-lockfile"
+
+[tasks.lint]
+description = "Biome lint + format check"
+run = "pnpm lint"
+
+[tasks.format]
+description = "Biome format --write"
+run = "pnpm format"
+
+[tasks.typecheck]
+description = "tsc --noEmit"
+run = "pnpm typecheck"
+
+[tasks.test]
+description = "vitest run --coverage"
+run = "pnpm test"
+
+[tasks.build]
+description = "tsc -p tsconfig.build.json"
+run = "pnpm build"
+
+[tasks.ci]
+description = "Full CI gate"
+depends = ["lint", "typecheck", "test", "build"]
+
+[tasks.ci-watch]
+description = "Watch GitHub Actions CI for the current branch; exits non-zero on failure"
+run = """
+sleep 5
+remote_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+repo=$(echo "$remote_url" | sed -E 's|^.*github\\.com[:/]||; s|\\.git$||')
+run_id=$(gh run list --repo "$repo" --branch "$(git branch --show-current)" --limit 1 --json databaseId --jq '.[0].databaseId')
+if [ -z "$run_id" ]; then echo "No run found for current branch on $repo" >&2; exit 1; fi
+gh run watch --repo "$repo" --exit-status "$run_id"
+"""
