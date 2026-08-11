@@ -1,10 +1,15 @@
-# Every directory pattern below is anchored to the repository root with a
-# leading slash, deliberately. A skill is a directory whose name is an
-# ordinary English word, so an unanchored `build/` also matches
+# The rule for this file: anything naming a *build or distribution artifact*
+# is anchored to the repository root with a leading slash. Patterns naming a
+# tool's own droppings — `__pycache__/`, `.vscode/`, `.idea/` — stay
+# recursive on purpose, because those really do appear at every depth. Do not
+# "fix" them.
+#
+# The anchors that are there are load-bearing. A skill is a directory whose
+# name is an ordinary English word, so an unanchored `build/` also matches
 # `skills/build/` — and it did: the hand-written `build` skill silently could
-# not be committed, and CI failed on the manifest test that requires it.
-# An unanchored directory pattern in this file is a bug waiting to happen.
-# Keep the anchors.
+# not be committed, and CI failed for three pushes on the manifest test that
+# requires it. Before adding an unanchored directory pattern, check that it
+# cannot collide with a skill name.
 
 # Python
 __pycache__/

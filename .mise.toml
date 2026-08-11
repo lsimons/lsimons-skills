@@ -23,6 +23,19 @@ zizmor = "1.29.0"
 # Used by `mise run lint`. actionlint shells out to shellcheck for the
 # `run:` blocks in workflows, and silently skips that half if shellcheck
 # is missing, so it is pinned here too rather than left to the host.
+#
+# Two caveats, both checked with `mise tool <x>` and `actionlint -verbose`
+# rather than assumed:
+#   - shellcheck reports `Security: [none]` — alone among the five tools
+#     here it has neither checksum nor attestation backing. The pin still
+#     fixes *which* release is fetched; it does not authenticate it. The
+#     other four report checksum and/or github_attestations, so the
+#     "pin everything" comment above buys less for this one line.
+#   - actionlint also wants `pyflakes`, for python `run:` blocks, and
+#     disables that rule silently when it is absent — the same trap
+#     shellcheck is pinned to avoid. There are no python `run:` blocks in
+#     this repo's workflows, so nothing is missed today; pin pyflakes here
+#     if one is ever added.
 actionlint = "1.7.12"
 shellcheck = "0.11.0"
 
