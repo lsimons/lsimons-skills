@@ -1,7 +1,8 @@
 # lsimons-skills
 
-My agent skills. Every skill lives under `skills/` and is committed here,
-whether hand-written or fetched with [skills.sh](https://www.skills.sh).
+My agent skills. Every skill is committed here — under `skills/` when it is
+enabled and `disabled/` when it is not — whether hand-written or fetched with
+[skills.sh](https://www.skills.sh).
 
 Upstream sources include forks of
 [sbp](https://github.com/lsimons/sbp-skills),
@@ -18,8 +19,9 @@ for an example.
 ## Layout
 
 ```
-skills/                # Enabled skill definitions, one directory per skill
-disabled/              # Vendored skills whose `enabled` flag is false
+skills/                # Skills whose `enabled` flag is true, one per directory
+disabled/              # Skills whose `enabled` flag is false — vendored and
+                       # hand-maintained skills alike land here when disabled
 scripts/               # Python tooling that maintains skills/ and disabled/
 tests/                 # Tests for scripts/
 upstream-skills.toml   # Which skills to fetch, and what to call them here
@@ -122,9 +124,10 @@ token; CI runs the same audit on every push and pull request.
 
 ## Licensing
 
-Skills vendored under `skills/` keep their upstream license. Every
-`[[source]]` in `upstream-skills.toml` records its license and copyright; this
-table mirrors them.
+Vendored skills keep their upstream license, whether they are currently
+enabled (`skills/`) or not (`disabled/`). Every `[[source]]` in
+`upstream-skills.toml` records its license and copyright; this table mirrors
+them.
 
 **Apache License 2.0** — see [APACHE-LICENSE](./APACHE-LICENSE):
 

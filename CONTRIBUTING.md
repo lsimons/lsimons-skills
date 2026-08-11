@@ -20,10 +20,16 @@ re-prefixing an upstream skill source.
 
 ## Before you open a pull request
 
-- Most of `skills/` and all of `disabled/` is **vendored** upstream content.
-  Editing it directly does not stick — the next `mise run skills-update`
-  overwrites it. Upstream the change, or express it as a rule in
-  `skill-rewrites.toml`.
+- Most skills, in **both** `skills/` and `disabled/`, are **vendored**
+  upstream content. Editing one directly does not stick — the next
+  `mise run skills-update` overwrites it. Upstream the change, or express it
+  as a rule in `skill-rewrites.toml`.
+
+  The exception is the skills declared under `local` in
+  `upstream-skills.toml`: those are hand-maintained here, never fetched and
+  never pruned, and are the ones to edit in place. Check the manifest, not
+  the directory — `enabled` decides only *which* of the two directories a
+  skill sits in, and says nothing about whether it is vendored.
 - Vendoring an upstream makes its licensing this repository's problem: record
   `license` and `copyright` on the `[[source]]`, and mirror them into the
   Licensing table in [README.md](README.md).
