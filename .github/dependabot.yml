@@ -1,6 +1,8 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
+  # `uv`, not `pip`: the manifest here is pyproject.toml + uv.lock, and only
+  # the uv ecosystem understands `[dependency-groups]` and updates the lockfile.
+  - package-ecosystem: "uv"
     directory: "/"
     schedule:
       interval: "weekly"
