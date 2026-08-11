@@ -1,62 +1,42 @@
+# Every directory pattern below is anchored to the repository root with a
+# leading slash, deliberately. A skill is a directory whose name is an
+# ordinary English word, so an unanchored `build/` also matches
+# `skills/build/` — and it did: the hand-written `build` skill silently could
+# not be committed, and CI failed on the manifest test that requires it.
+# An unanchored directory pattern in this file is a bug waiting to happen.
+# Keep the anchors.
+
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# Distribution / packaging.
+# `tool.uv.package = false` — this repo builds no sdist or wheel — so these
+# only guard against a stray local invocation.
+/build/
+/dist/
+/.eggs/
+/*.egg-info/
+/*.egg
 
 # Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+/htmlcov/
+/.coverage
+/.coverage.*
+/coverage.xml
+/.pytest_cache/
+/.ruff_cache/
 
 # Virtual environments
-.venv/
-venv/
-ENV/
-env/
+/.venv/
+/venv/
 
 # Environment
-.python-version
-.env
-.env.*
+/.python-version
+/.env
+/.env.*
 
 # IDEs and editors
 .vscode/
@@ -74,7 +54,10 @@ env/
 ehthumbs.db
 
 # Claude
+# `.claude/` itself is tracked on purpose — settings.json is shared
+# configuration for this repo. Only per-user and scratch state is ignored.
 .claude/settings.local.json
+.claude/worktrees
 
 # Proprietary Schuberg Philis content — never vendorable, see README "Not vendored"
 skills/sbp-brandbook/
