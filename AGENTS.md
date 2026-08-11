@@ -11,26 +11,40 @@ whatever consumes this repository.
 
 ## Quick Reference
 
-- **One-time**: `mise install`
-- **Setup**: `mise run install` (or `uv sync --all-groups`)
-- **Test**: `mise run test` (or `uv run pytest`)
-- **Lint**: `mise run lint` (or `uv run ruff check . && uv run ruff format --check .`)
-- **Typecheck**: `mise run typecheck` (or `uv run basedpyright`)
-- **Format**: `mise run format` (or `uv run ruff format . && uv run ruff check --fix .`)
-- **Full CI gate**: `mise run ci`
-- **Fetch missing skills**: `mise run skills-install`
-- **Re-fetch all skills**: `mise run skills-update`
-- **Triage worklist for renamed skills**: `mise run skills-refs`
+Every repo task lives in `.mise.toml`; `mise tasks` lists them.
+
+| Task                     | What it does                                             |
+| ------------------------ | -------------------------------------------------------- |
+| `mise install`           | Install the pinned toolchain (one-time)                  |
+| `mise run install`       | `uv sync --all-groups`                                   |
+| `mise run lint`          | `ruff check` + `ruff format --check` + `actionlint`      |
+| `mise run format`        | `ruff format` + `ruff check --fix`                       |
+| `mise run typecheck`     | `basedpyright` (strict)                                  |
+| `mise run test`          | `pytest` with coverage                                   |
+| `mise run ci`            | Full gate: lint + typecheck + test                       |
+| `mise run audit`         | `zizmor` audit of workflows + dependabot config          |
+| `mise run ci-watch`      | Watch GitHub Actions for the current branch              |
+| `mise run skills-install`| Fetch only the skills that are missing                   |
+| `mise run skills-update` | Re-fetch every skill, replay rewrites, prune strays      |
+| `mise run skills-refs`   | Triage worklist of references to renamed skills          |
+
+`audit` is not part of `ci` because it needs network access and a GitHub
+token; the workflow's `zizmor` job covers it on every push and PR.
 
 ## Structure
 
 ```
-skills/                # Skill definitions, one directory per skill
-scripts/               # Python tooling that maintains skills/
-tests/                 # Tests for scripts/
-upstream-skills.toml   # Which skills to fetch, what to call them here, and
-                       # which frontmatter fields to override
-skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
+skills/                   # Enabled skill definitions, one directory per skill
+disabled/                 # Vendored skills whose `enabled` flag is false
+scripts/                  # Python tooling that maintains skills/
+tests/                    # Tests for scripts/
+upstream-skills.toml      # Which skills to fetch, what to call them here, and
+                          # which frontmatter fields to override
+skill-rewrites.toml       # Cross-reference fixes replayed after each fetch
+.mise.toml                # Pinned toolchain + every repo task
+pyproject.toml            # ruff, basedpyright, pytest and coverage config
+.github/workflows/ci.yml  # CI: mise run lint/typecheck/test + zizmor audit
+.github/dependabot.yml    # Weekly uv + github-actions updates, 7-day cooldown
 ```
 
 There is no installable Python package (`tool.uv.package = false`) —
@@ -42,10 +56,10 @@ so run the tooling as a module from the repository root:
 
 Everything under `skills/` is committed, including skills fetched from
 skills.sh. `upstream-skills.toml` declares what is fetched; skills listed
-under `local` there (`1password`, `claude-history`, `complete`, `leo-bot`,
-`python-knowledge-patch`) are maintained by hand and the fetcher leaves them
-alone. Anything under `skills/` that the manifest does not declare is
-reported on every run, and `--prune` deletes it.
+under `local` there are maintained by hand and the fetcher leaves them
+alone. Read that list from the manifest rather than from here — it changes.
+Anything under `skills/` that the manifest does not declare is reported on
+every run, and `--prune` deletes it.
 
 Every skill also has an `enabled` flag, defaulting to `false`: enabled skills
 live at `skills/<name>`, everything else at `disabled/<name>`. Set it
@@ -55,10 +69,14 @@ block at the top of `upstream-skills.toml`. `mise run skills-update` (via
 `sync_skill_locations` in `scripts/update_skills.py`) moves a skill's
 directory to match its `enabled` state every run; never `mv` one by hand.
 
-`leo-bot` is the cross-pack router — OpenSpec first when the repo has an
+`auto` is the enabled router: it dispatches by intent to the phase skills
+(`setup`, `research`, `spike`, `spec`, `build`, `review`, `complete`, `flow`,
+`triage`, `bump`), which is why `upstream-skills.toml` declares them as a set.
+`leo-bot` is the older cross-pack router — OpenSpec first when the repo has an
 `openspec/` directory, then `sbp-*` for mission-critical work, then exactly
-one of `mp-*` / `ao-*` / `s-*`. When a vendored skill is added, renamed, or
-dropped, its routing table needs updating too.
+one of `mp-*` / `ao-*` / `s-*`. It is currently disabled. When a vendored
+skill is added, renamed, or dropped, a router's routing table needs updating
+too.
 
 When editing a fetched skill, remember the next `mise run skills-update` will
 overwrite it — upstream the change, move the skill out of the manifest, or
@@ -165,9 +183,33 @@ of `README.md`.
 ## Guidelines
 
 **Code quality:**
-- Full type annotations (basedpyright: 0 errors)
-- Tests for all functionality
-- ruff for linting and formatting
+
+- Full type annotations; `basedpyright` strict must report 0 errors.
+- Tests for all functionality; the coverage floor is 80%
+  (`--cov-fail-under=80` in `pyproject.toml`, enforced by `mise run test`).
+- `ruff` for linting and formatting; do not hand-format around it. It is
+  configured to skip `skills/` and `disabled/`, which are vendored
+  upstream content — do not reformat other people's skills.
+- Do not silence a check without a written justification on the same
+  line — a bare `# noqa` or `# type: ignore` is not acceptable, a
+  narrow `# type: ignore[reportUnknownMemberType]  # <lib> ships no
+  stubs` is. Prefer fixing the cause; suppress when the cause is
+  outside this repo.
+- Never weaken a control to make a check pass: do not lower the
+  coverage floor, unpin an action, or delete a failing test.
+
+**Supply chain:**
+
+- `uv.lock` is committed and must stay in the tree.
+- GitHub Actions are pinned to full-length commit SHAs with a `# vX.Y.Z`
+  comment, and `zizmor` enforces that in CI.
+- Every tool in `.mise.toml` is pinned to an exact version, python
+  included. Nothing here is covered by dependabot, so refresh it
+  deliberately with `mise up` and read the diff.
+- The `zizmor` version in `.mise.toml` and the `version:` in the
+  workflow's zizmor job must match; bump them together.
+- Vendoring skills makes their licensing this repository's problem —
+  see "Licensing" above.
 
 ## Commit Message Convention
 
@@ -180,9 +222,3 @@ Follow [Conventional Commits](https://conventionalcommits.org/):
 ## Session Completion
 
 Use `/complete`, available at [skills/complete/SKILL.md](./skills/complete/SKILL.md).
-
-# Licensing
-
-When adding an entry to `upstream-skills.txt`, check the upstream license and
-update the README, LICENSE, and — for a new Apache-licensed upstream — implement
-any `NOTICE` requirement.
