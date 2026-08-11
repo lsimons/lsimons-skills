@@ -2,8 +2,9 @@
 
 > This file (`AGENTS.md`) is the canonical agent configuration. `CLAUDE.md` is a symlink to this file.
 
-My agent skills. Every skill lives under `skills/` and is committed here,
-whether hand-written or fetched with [skills.sh](https://www.skills.sh).
+My agent skills. Every skill is committed here — under `skills/` when it is
+enabled and `disabled/` when it is not — whether hand-written or fetched with
+[skills.sh](https://www.skills.sh).
 
 Wiring skills into a particular coding agent's configuration (symlinking
 into `~/.claude/skills`, `~/.agents/skills`, and friends) is the job of
@@ -34,9 +35,10 @@ token; the workflow's `zizmor` job covers it on every push and PR.
 ## Structure
 
 ```
-skills/                   # Enabled skill definitions, one directory per skill
-disabled/                 # Vendored skills whose `enabled` flag is false
-scripts/                  # Python tooling that maintains skills/
+skills/                   # Skills whose `enabled` flag is true, one per dir
+disabled/                 # Skills whose `enabled` flag is false — vendored and
+                          # hand-maintained skills alike land here when disabled
+scripts/                  # Python tooling that maintains skills/ and disabled/
 tests/                    # Tests for scripts/
 upstream-skills.toml      # Which skills to fetch, what to call them here, and
                           # which frontmatter fields to override
@@ -54,12 +56,13 @@ so run the tooling as a module from the repository root:
 
 ## Skills
 
-Everything under `skills/` is committed, including skills fetched from
-skills.sh. `upstream-skills.toml` declares what is fetched; skills listed
-under `local` there are maintained by hand and the fetcher leaves them
-alone. Read that list from the manifest rather than from here — it changes.
-Anything under `skills/` that the manifest does not declare is reported on
-every run, and `--prune` deletes it.
+Everything under `skills/` and `disabled/` is committed, including skills
+fetched from skills.sh. `upstream-skills.toml` declares what is fetched;
+skills listed under `local` there are maintained by hand and the fetcher
+leaves them alone. Read that list from the manifest rather than from here —
+it changes. Anything in *either* directory that the manifest does not declare
+is reported on every run, and `--prune` deletes it (`prune_skills` scans both,
+see `scripts/update_skills.py`).
 
 Every skill also has an `enabled` flag, defaulting to `false`: enabled skills
 live at `skills/<name>`, everything else at `disabled/<name>`. Set it
