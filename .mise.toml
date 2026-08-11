@@ -4,9 +4,27 @@
 # dispatches to uv. `pyproject.toml`'s `requires-python` remains
 # authoritative — mise reads it.
 
+# Every tool is pinned to an exact version, deliberately and without
+# exception — including python. This is a supply-chain rule, not a
+# stability one: an upstream compromise must never be auto-downloaded.
+# A blanket "pin everything, update mechanically" policy is far easier
+# to review than a per-dependency judgement about which upstreams are
+# trustworthy enough to float.
+#
+# The cost is that nothing here is covered by dependabot, so these go
+# stale silently. Refresh them deliberately with `mise up`, and read the
+# diff.
 [tools]
-python = "3.14"
-uv = "latest"
+python = "3.14.6"
+uv = "0.12.2"
+# Used by `mise run audit`; must match `version:` in the workflow's
+# zizmor job. Bump them together.
+zizmor = "1.29.0"
+# Used by `mise run lint`. actionlint shells out to shellcheck for the
+# `run:` blocks in workflows, and silently skips that half if shellcheck
+# is missing, so it is pinned here too rather than left to the host.
+actionlint = "1.7.12"
+shellcheck = "0.11.0"
 
 [env]
 _.file = { path = ".env", optional = true }
@@ -28,8 +46,8 @@ description = "List every surviving reference to a renamed skill's upstream name
 run = "uv run python -m scripts.references"
 
 [tasks.lint]
-description = "ruff check + ruff format --check"
-run = ["uv run ruff check .", "uv run ruff format --check ."]
+description = "ruff check + ruff format --check + actionlint"
+run = ["uv run ruff check .", "uv run ruff format --check .", "actionlint"]
 
 [tasks.format]
 description = "ruff format + ruff check --fix"
@@ -46,6 +64,35 @@ run = "uv run pytest"
 [tasks.ci]
 description = "Full CI gate"
 depends = ["lint", "typecheck", "test"]
+
+# Local mirror of the `zizmor` CI job, using the mise-pinned zizmor. Not
+# part of `ci` because it needs network access and a GitHub token for the
+# online audits.
+#
+# Without a token zizmor silently falls back to offline and skips the
+# `impostor-commit` and `known-vulnerable-actions` audits, which is an
+# unverified result, not a pass — so refuse to run rather than exit 0 on
+# a weaker check than the name promises.
+#
+# No `--collect`: the default collects every input kind — workflows,
+# actions, dependabot and pre-commit configs — while respecting
+# `.gitignore`. `--collect=all` is the same set of kinds with
+# `.gitignore` ignored, which drags the 300 MB `.venv` in, plus the
+# vendored `skills/` and `disabled/` trees. Naming kinds explicitly
+# would be strictly narrower than the default.
+[tasks.audit]
+description = "zizmor audit of GitHub Actions workflows + dependabot config"
+run = """
+set -e
+GH_TOKEN=$(gh auth token 2>/dev/null) || true
+if [ -z "$GH_TOKEN" ]; then
+  echo "No GitHub token: run \\`gh auth login\\`. Refusing to run a" >&2
+  echo "partial audit — the online audits would be silently skipped." >&2
+  exit 1
+fi
+export GH_TOKEN
+zizmor --strict-collection .
+"""
 
 [tasks.ci-watch]
 description = "Watch GitHub Actions CI for the current branch; exits non-zero on failure"
