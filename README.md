@@ -18,8 +18,9 @@ for an example.
 ## Layout
 
 ```
-skills/                # Skill definitions, one directory per skill
-scripts/               # Python tooling that maintains skills/
+skills/                # Enabled skill definitions, one directory per skill
+disabled/              # Vendored skills whose `enabled` flag is false
+scripts/               # Python tooling that maintains skills/ and disabled/
 tests/                 # Tests for scripts/
 upstream-skills.toml   # Which skills to fetch, and what to call them here
 skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
@@ -28,18 +29,20 @@ skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
 ## Skills
 
 Skills declared in [`upstream-skills.toml`](./upstream-skills.toml) are
-fetched with the skills.sh CLI. Skills listed there under `local`
-(`1password`, `claude-history`, `complete`, `leo-bot`, `python-knowledge-patch`) are
-maintained by hand and the fetcher leaves them alone.
+fetched with the skills.sh CLI. Skills listed there under `local` are
+maintained by hand and the fetcher leaves them alone; that list lives in the
+manifest rather than here, so it cannot go stale in two places.
 
-`leo-bot` is the router across the vendored packs: it prefers a project's
-own OpenSpec skills when an `openspec/` directory is present, routes
-mission-critical work to `sbp-*`, and otherwise asks you to pick exactly one
-of `mp-*`, `ao-*`, or `s-*` — each pack's own router (`mp-ask-leo`,
-`ao-using-agent-skills`, `s-using-superpowers`) still covers routing within
-that pack. `complete` is the finishing move it points to once code changes
-exist: quality gates, commit, push, and CI verification via `gh`, `glab`, or
-plain `git` depending on the remote.
+Every skill also carries an `enabled` flag defaulting to `false`: enabled
+skills live at `skills/<name>`, everything else at `disabled/<name>`, and
+`mise run skills-update` moves directories to match. Never `mv` one by hand.
+
+`auto` is the router: it dispatches by intent to the phase skills — `setup`,
+`research`, `spike`, `spec`, `build`, `review`, `complete`, `flow`, `triage`,
+`bump`. `complete` is the finishing move once code changes exist: quality
+gates, commit, push, and CI verification via `gh`, `glab`, or plain `git`
+depending on the remote. `leo-bot` is an older cross-pack router over the
+vendored packs, currently disabled.
 
 ```bash
 mise run skills-install    # fetch only what is missing
@@ -103,14 +106,19 @@ later fetch, so routine updates stay a single command.
 ## Development Commands
 
 ```bash
-mise install          # one-time: pin + install toolchain
+mise install          # one-time: install the pinned toolchain
 mise run install      # install project deps
-mise run test         # pytest
-mise run lint         # ruff check + format --check
+mise run test         # pytest with coverage
+mise run lint         # ruff check + format --check + actionlint
 mise run typecheck    # basedpyright
 mise run format       # ruff format + --fix
-mise run ci           # full CI gate
+mise run ci           # full CI gate: lint + typecheck + test
+mise run audit        # zizmor audit of workflows + dependabot config
+mise run ci-watch     # watch GitHub Actions for the current branch
 ```
+
+`audit` is separate from `ci` because it needs network access and a GitHub
+token; CI runs the same audit on every push and pull request.
 
 ## Licensing
 
@@ -137,7 +145,7 @@ table mirrors them.
 | `vercel-find-skills`, `vercel-web-design-guidelines` | [vercel-labs](https://github.com/vercel-labs) | Copyright (c) 2026 Vercel, Inc. |
 | `claude-history` | hand-maintained here | Copyright (c) 2024 Raine |
 | `python-knowledge-patch` | hand-maintained here | Copyright (c) 2026 Nevaberry |
-| `1password`, `claude-history`, `complete` | hand-maintained here | Copyright (c) 2026 Leo Simons |
+| every other skill declared under `local` in `upstream-skills.toml` | hand-maintained here | Copyright (c) 2026 Leo Simons |
 
 
 Upstream copyright holders are collected in [LICENSE](./LICENSE).
