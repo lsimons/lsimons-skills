@@ -81,8 +81,8 @@ def test_npm_install_global_invokes_npm(monkeypatch: pytest.MonkeyPatch) -> None
     monkeypatch.setattr(subprocess, "run", fake)
     stub_command_exists(monkeypatch, present=True)
 
-    assert shell.npm_install_global("skills")
-    assert fake.calls[0][0] == ["npm", "install", "-g", "skills"]
+    assert shell.npm_install_global("skills@1.2.3")
+    assert fake.calls[0][0] == ["npm", "install", "-g", "--ignore-scripts", "skills@1.2.3"]
 
 
 def test_npm_install_global_reports_failure(monkeypatch: pytest.MonkeyPatch) -> None:

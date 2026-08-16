@@ -43,6 +43,20 @@ STAGING_AGENT = "claude-code"
 # its own Chrome build.
 AGENT_BROWSER_SKILL = "agent-browser"
 
+# Both npm packages are pinned to an exact version, for the same reason
+# every tool in `.mise.toml` is: `npm install -g foo` and `npx -y foo`
+# both resolve to *latest*, so an upstream compromise would be
+# auto-downloaded and executed here — by the very script that writes the
+# vendored `skills/` tree. Pinning does not authenticate a release, but it
+# fixes *which* one runs, and every fetch lands as a reviewable git diff.
+#
+# Nothing refreshes these: dependabot covers uv and GitHub Actions, and
+# mise covers `[tools]`, but neither sees these. Bump them deliberately,
+# keeping to the 7-day-old floor that `minimum_release_age` applies to
+# mise tools, and read the resulting `skills/` diff.
+SKILLS_CLI_VERSION = "1.5.22"
+AGENT_BROWSER_VERSION = "0.33.2"
+
 # How many example lines to print per renamed skill in the reference report.
 REPORT_SAMPLE = 3
 
@@ -60,10 +74,15 @@ def skill_dir(local_name: str, *, enabled: bool) -> Path:
 
 
 def skills_command() -> list[str]:
-    """Return the argv prefix for the skills.sh CLI."""
+    """Return the argv prefix for the skills.sh CLI.
+
+    A `skills` already on PATH is used as-is and may be any version —
+    `install_cli` only installs when the command is missing, so it cannot
+    vouch for one it did not put there. The `npx` fallback is pinned.
+    """
     if command_exists("skills"):
         return ["skills"]
-    return ["npx", "-y", "skills"]
+    return ["npx", "-y", f"skills@{SKILLS_CLI_VERSION}"]
 
 
 def install_cli(*, dry_run: bool = False) -> bool:
@@ -72,26 +91,27 @@ def install_cli(*, dry_run: bool = False) -> bool:
         success("skills CLI already installed")
         return True
 
-    info("Installing the skills.sh CLI...")
-    if npm_install_global("skills", dry_run=dry_run):
+    info(f"Installing the skills.sh CLI (skills@{SKILLS_CLI_VERSION})...")
+    if npm_install_global(f"skills@{SKILLS_CLI_VERSION}", dry_run=dry_run):
         success("skills CLI installed")
         return True
 
-    warn("Failed to install the skills CLI; falling back to `npx skills`")
+    warn(f"Failed to install the skills CLI; falling back to `npx skills@{SKILLS_CLI_VERSION}`")
     return False
 
 
 def install_agent_browser(*, dry_run: bool = False) -> None:
     """Install the CLI that the agent-browser skill drives.
 
-    npm blocks the package's postinstall script by default, so fetch its
-    Chrome build (~180 MB, once) explicitly.
+    npm blocks the package's postinstall script by default, and
+    `npm_install_global` passes `--ignore-scripts` on top of that, so fetch
+    its Chrome build (~180 MB, once) explicitly.
     """
     if command_exists("agent-browser"):
         success("agent-browser already installed")
     else:
-        info("Installing agent-browser...")
-        if not npm_install_global("agent-browser", dry_run=dry_run):
+        info(f"Installing agent-browser@{AGENT_BROWSER_VERSION}...")
+        if not npm_install_global(f"agent-browser@{AGENT_BROWSER_VERSION}", dry_run=dry_run):
             warn("Failed to install agent-browser; its skill will not work")
             return
         success("agent-browser installed")

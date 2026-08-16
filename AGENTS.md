@@ -206,9 +206,16 @@ of `README.md`.
 - `uv.lock` is committed and must stay in the tree.
 - GitHub Actions are pinned to full-length commit SHAs with a `# vX.Y.Z`
   comment, and `zizmor` enforces that in CI.
-- Every tool in `.mise.toml` is pinned to an exact version, python
-  included. Nothing here is covered by dependabot, so refresh it
+- Every tool in `.mise.toml` is pinned to an exact version, python and
+  node included. Nothing here is covered by dependabot, so refresh it
   deliberately with `mise up` and read the diff.
+- The two npm packages `skills-update` installs — the skills.sh CLI and
+  `agent-browser` — are pinned in `scripts/update_skills.py`
+  (`SKILLS_CLI_VERSION`, `AGENT_BROWSER_VERSION`), and installed with
+  `--ignore-scripts`. Neither dependabot nor mise sees them; bump them by
+  hand, keeping to the same 7-day-old floor `minimum_release_age` applies
+  to mise tools. Node is pinned so the `npm` doing the installing is
+  pinned too.
 - The `zizmor` version in `.mise.toml` and the `version:` in the
   workflow's zizmor job must match; bump them together.
 - Vendoring skills makes their licensing this repository's problem —
