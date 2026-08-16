@@ -253,3 +253,6 @@ skills = [
   "sbp-why-we-do-this",
   "terraform",
 ]
+
+[source.enabled]
+sbp-dependency-audit = true
