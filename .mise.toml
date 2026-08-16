@@ -4,6 +4,10 @@
 # dispatches to uv. `pyproject.toml`'s `requires-python` remains
 # authoritative — mise reads it.
 
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
 # Every tool is pinned to an exact version, deliberately and without
 # exception — including python. This is a supply-chain rule, not a
 # stability one: an upstream compromise must never be auto-downloaded.
@@ -15,8 +19,8 @@
 # stale silently. Refresh them deliberately with `mise up`, and read the
 # diff.
 [tools]
-python = "3.14.6"
-uv = "0.12.2"
+python = "3.14.7"
+uv = "0.12.3"
 # Used by `mise run audit`; must match `version:` in the workflow's
 # zizmor job. Bump them together.
 zizmor = "1.29.0"
