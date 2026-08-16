@@ -42,6 +42,15 @@ zizmor = "1.29.0"
 #     if one is ever added.
 actionlint = "1.7.12"
 shellcheck = "0.11.0"
+# Used by `mise run skills-update`, which shells out to `npm`/`npx` to
+# fetch the skills.sh CLI. Pinning node pins the npm that installs those
+# packages — without it the fetch ran on whatever node the host happened
+# to have, which is the one hole in the "pin everything" rule above.
+# `scripts/shell.py` pins the packages themselves.
+#
+# CI never runs skills-update, but `mise-action` installs everything under
+# [tools], so this costs one cached node download per run.
+node = "24.19.0"
 
 [env]
 _.file = { path = ".env", optional = true }

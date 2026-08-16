@@ -38,13 +38,20 @@ def stub_commands(monkeypatch: pytest.MonkeyPatch, *, present: bool) -> None:
     monkeypatch.setattr(update_skills, "command_exists", fake)
 
 
-def stub_npm(monkeypatch: pytest.MonkeyPatch, *, ok: bool) -> None:
-    """Replace `npm_install_global` with a stub reporting success/failure."""
+def stub_npm(monkeypatch: pytest.MonkeyPatch, *, ok: bool) -> list[str]:
+    """Replace `npm_install_global` with a stub reporting success/failure.
+
+    Returns the list it records package specs into, so a test can assert
+    the caller pinned a version rather than asking for `latest`.
+    """
+    requested: list[str] = []
 
     def fake(package: str, *, dry_run: bool = False) -> bool:
+        requested.append(package)
         return ok
 
     monkeypatch.setattr(update_skills, "npm_install_global", fake)
+    return requested
 
 
 def forbid_npm(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -79,9 +86,13 @@ def test_skills_command_prefers_the_installed_cli(monkeypatch: pytest.MonkeyPatc
     assert update_skills.skills_command() == ["skills"]
 
 
-def test_skills_command_falls_back_to_npx(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_skills_command_falls_back_to_pinned_npx(monkeypatch: pytest.MonkeyPatch) -> None:
     stub_commands(monkeypatch, present=False)
-    assert update_skills.skills_command() == ["npx", "-y", "skills"]
+    assert update_skills.skills_command() == [
+        "npx",
+        "-y",
+        f"skills@{update_skills.SKILLS_CLI_VERSION}",
+    ]
 
 
 def test_install_cli_is_a_no_op_when_present(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -90,10 +101,14 @@ def test_install_cli_is_a_no_op_when_present(monkeypatch: pytest.MonkeyPatch) ->
     assert update_skills.install_cli()
 
 
-def test_install_cli_installs_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_install_cli_installs_the_pinned_version_when_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     stub_commands(monkeypatch, present=False)
-    stub_npm(monkeypatch, ok=True)
+    requested = stub_npm(monkeypatch, ok=True)
+
     assert update_skills.install_cli()
+    assert requested == [f"skills@{update_skills.SKILLS_CLI_VERSION}"]
 
 
 def test_install_cli_warns_when_install_fails(
@@ -103,7 +118,7 @@ def test_install_cli_warns_when_install_fails(
     stub_npm(monkeypatch, ok=False)
 
     assert not update_skills.install_cli()
-    assert "falling back to `npx skills`" in capsys.readouterr().out
+    assert "falling back to `npx skills@" in capsys.readouterr().out
 
 
 def test_install_agent_browser_fetches_chrome_when_already_installed(
@@ -121,11 +136,12 @@ def test_install_agent_browser_gives_up_when_npm_fails(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     stub_commands(monkeypatch, present=False)
-    stub_npm(monkeypatch, ok=False)
+    requested = stub_npm(monkeypatch, ok=False)
     fake = FakeRun()
     monkeypatch.setattr(update_skills, "run", fake)
 
     update_skills.install_agent_browser()
+    assert requested == [f"agent-browser@{update_skills.AGENT_BROWSER_VERSION}"]
     assert fake.calls == []
     assert "its skill will not work" in capsys.readouterr().out
 

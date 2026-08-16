@@ -31,11 +31,20 @@ def run(
 
 
 def npm_install_global(package: str, *, dry_run: bool = False) -> bool:
-    """Install an npm package globally (into the active mise node)."""
+    """Install an npm package globally (into the active mise node).
+
+    `package` must carry an exact `name@version` spec — callers pin, this
+    helper does not choose. `--ignore-scripts` is passed unconditionally:
+    npm blocks lifecycle scripts by default already, so this only makes
+    that guarantee explicit and independent of the host's npm config.
+    Neither package this repo installs needs an install script; the one
+    thing that does (agent-browser's Chrome build) is fetched by an
+    explicit `agent-browser install` instead.
+    """
     if dry_run:
-        dry(f"would run: npm install -g {package}")
+        dry(f"would run: npm install -g --ignore-scripts {package}")
         return True
     if not command_exists("npm"):
         error("npm not found; install node (`mise install`) first")
         return False
-    return run(["npm", "install", "-g", package]) == 0
+    return run(["npm", "install", "-g", "--ignore-scripts", package]) == 0
