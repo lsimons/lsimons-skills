@@ -39,7 +39,8 @@ They fail differently, so name them differently.
 For example, for the README, look for placeholder tokens the template declares:
 
 ```bash
-grep -ohE '<[^>]{1,30}>' skills/setup/assets/README-template.md | sort -u
+SKILL_DIR=[skill base directory]
+grep -ohE '<[^>]{1,80}>' ${SKILL_DIR}/assets/README-template.md | sort -u
 # -> <how to use the project> <medium description> <Name> <other sections>
 #    <pointers at docs/> <project> <short description>
 ```

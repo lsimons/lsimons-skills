@@ -1,6 +1,6 @@
 ---
 name: setup
-description: improve project scaffolding and boilerplate
+description: create or improve project scaffolding and boilerplate, setting up metadata files including readme and license, basic agent instructions, dependency management and CI/CD, based on templates
 model: opus
 ---
 
