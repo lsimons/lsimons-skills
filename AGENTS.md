@@ -40,6 +40,7 @@ disabled/                 # Skills whose `enabled` flag is false — vendored an
                           # hand-maintained skills alike land here when disabled
 scripts/                  # Python tooling that maintains skills/ and disabled/
 tests/                    # Tests for scripts/
+docs/agents/              # Conventions an agent needs: issue tracker, labels
 upstream-skills.toml      # Which skills to fetch, what to call them here, and
                           # which frontmatter fields to override
 skill-rewrites.toml       # Cross-reference fixes replayed after each fetch
@@ -182,6 +183,33 @@ Not every upstream skill is vendorable. `sbp-brandbook` is proprietary
 Schuberg Philis content that forbids redistribution outside its own
 repository, so it stays out of the manifest — see the "Not vendored" section
 of `README.md`.
+
+## Agent skills
+
+How an agent should work *in* this repo. (Not to be confused with `## Skills`
+above, which is about the skills this repo *ships*.)
+
+### Git remote
+
+Use GitHub with `gh`. The remote is
+[lsimons/lsimons-skills](https://github.com/lsimons/lsimons-skills).
+
+### Issue tracker
+
+Use GitHub issues via `gh`. See [`docs/agents/issue-tracker.md`](./docs/agents/issue-tracker.md).
+
+A bug in a vendored skill belongs in *that* upstream's tracker, not here —
+fixing it here does not stick.
+
+### Triage labels
+
+Use `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`,
+`wontfix`. See [`docs/agents/issue-tracker.md`](./docs/agents/issue-tracker.md).
+
+### Security
+
+Vulnerability reports go through GitHub's private vulnerability reporting.
+See [`SECURITY.md`](./SECURITY.md).
 
 ## Guidelines
 

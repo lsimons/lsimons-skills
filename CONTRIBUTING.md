@@ -18,6 +18,13 @@ mise run ci        # lint + typecheck + test — must pass before you open a PR
 working agreements in full, including the workflow for adding or
 re-prefixing an upstream skill source.
 
+## Filing an issue
+
+Issues are GitHub issues. The labels and the triage flow are documented in
+[docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) — new issues get
+`needs-triage`. Found a security problem instead? Do not open a public issue;
+follow [SECURITY.md](SECURITY.md).
+
 ## Before you open a pull request
 
 - Most skills, in **both** `skills/` and `disabled/`, are **vendored**

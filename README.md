@@ -24,6 +24,7 @@ disabled/              # Skills whose `enabled` flag is false — vendored and
                        # hand-maintained skills alike land here when disabled
 scripts/               # Python tooling that maintains skills/ and disabled/
 tests/                 # Tests for scripts/
+docs/agents/           # Conventions an agent needs: issue tracker, labels
 upstream-skills.toml   # Which skills to fetch, and what to call them here
 skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
 ```
@@ -163,4 +164,12 @@ at a local sbp-skills checkout if you need it.
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md). Issues are GitHub issues — the
+labels and triage flow are in
+[docs/agents/issue-tracker.md](./docs/agents/issue-tracker.md).
+
+## Security
+
+This is a personal project; do not depend on it. Vulnerability reports go
+through GitHub's private vulnerability reporting — see
+[SECURITY.md](./SECURITY.md).
