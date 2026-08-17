@@ -4,6 +4,10 @@
 # cargo commands. Cargo.toml's `rust-version` remains the MSRV
 # authority.
 
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
 [tools]
 rust = "latest"
 

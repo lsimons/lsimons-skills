@@ -4,6 +4,10 @@
 # wraps the native `go` / `golangci-lint` / `gofumpt` commands. go.mod's
 # `go` directive remains authoritative — mise reads it.
 
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
 [tools]
 go = "latest"
 golangci-lint = "latest"

@@ -23,6 +23,12 @@ Add any `mise` commands that should typically exist based on the tools that are 
 
 Run `mise trust` if needed.
 
+Make sure mise has dependency cooldowns enabled: `mise settings set -l minimum_release_age=7d`.
+
+Make sure mise lockfiles are enabled: `mise settings set -l lockfile=true`.
+
+If there is a `mise.lock`, update with `mise lock`. Otherwise, generate a lockfile with `mise lock --platform linux-x64,macos-arm64,windows-x64`.
+
 Run `mise doctor` to see if anything needs fixing.
 
 If you changed `.mise.toml` or `mise.toml`, run `mise fmt` to format the file.

@@ -12,24 +12,55 @@ At least take care of each of the sections below.
 
 ## Exploration
 
-Read the repo once and form a plan before mutating anything. The sections below interact — whether mise is in use decides the README, both CI templates and half the verification commands; monorepo-ness decides the dependabot `directories` and the CI shape; the remote decides the issue tracker, the labels and the security policy. Deciding each section in isolation produces a patchwork on exactly the partially-set-up case that matters most.
+Read the repo and form a plan before changing anything. The sections below interact: whether mise is in use informs the README, CI templates and verification commands; monorepo presence informs dependabot `directories` and CI shape; git remote informs issue tracker, labels and security policy.
 
 Look at:
 
 * `git log -10 --oneline`, `ls` — age of the project, whether it is close to empty.
 * **Which git host**, unless there are explicit instructions. From `git remote get-url origin`:
-   - URL contains `github` -> use GitHub and its `gh` CLI
-   - URL contains `gitlab` -> use Gitlab and its `glab` CLI
-   - Neither -> fall back to plain `git`
-   - No git repo or no git remote -> create a repo with `git init`, plain git for now. This is the one branch here that is an action rather than a conclusion, and it has to happen before anything else writes files.
-* Which metadata files already exist: `LICENSE*`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `README.md`, `AGENTS.md`, `CLAUDE.md`, `.gitignore`, `docs/agents/issue-tracker.md`, `.mise.toml` / `mise.toml`, `.github/workflows/`, `.github/dependabot.yml`, `.gitlab-ci.yml`. For each, whether it still describes the project — see *Presence and currency* below.
-* **Monorepo signals**: `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, a `tool.uv.workspace` table in `pyproject.toml`, or a populated `packages/*` with its own sources. Absence means single-package, which is almost every repo.
-* **Language and toolchain signals** — which language, which package manager, which test runner. These decide the mise template, the CI template, and the dependabot ecosystems.
-* **Which tools are on `PATH`**: `mise`, `zizmor`, `actionlint`, `gh`, `glab`, and whether `gh`/`glab` are authenticated. This decides which checks can run at all, and therefore which verification results will come back *unverified*.
+   * URL contains `github` -> use GitHub and its `gh` CLI
+   * URL contains `gitlab` -> use Gitlab and its `glab` CLI
+   * Neither -> fall back to plain `git`
+   * No git repo or no git remote -> create a repo with `git init`. Do this immediately. Plain git for now.
+* Which metadata files already exist:
+   * `LICENSE*`
+   * `CODE_OF_CONDUCT.md`
+   * `CONTRIBUTING.md`
+   * `SECURITY.md`
+   * `README.md`
+   * `AGENTS.md`
+   * `CLAUDE.md`
+   * `.gitignore`
+   * `.mise.toml` / `mise.toml` / `mise.lock`
+   * `.github/workflows/` / `.github/dependabot.yml` / `.gitlab-ci.yml`
+   * `docs/agents/issue-tracker.md` / `docs/agents/*`.
+   * Read all the files.
+   * Determine whether the files still match the project: see *Presence and currency* below.
+* **Monorepo signals**:
+   * `pnpm-workspace.yaml`,
+   * `workspaces` field in `package.json`,
+   * `tool.uv.workspace` table in `pyproject.toml`,
+   * a populated `packages/*` with its own sources.
+   * Absence means single-package, which is almost every repo.
+* **Language and toolchain signals**:
+   * which language
+   * which package manager
+   * which test runner.
+   * These inform the mise template, the CI template, and the dependabot ecosystems.
+* **Which tools are on `PATH`**:
+   * `mise`
+   * `zizmor`
+   * `actionlint`
+   * `gh` / `glab`, and whether `gh`/`glab` are authenticated.
+   * This decides which checks can run, and which verification results will come back *unverified*.
+* **Project setup docs**:
+   * additional `.md` files pointed at by `AGENTS.md` / `CLAUDE.md` / `README.md`
+   * `openspec/` / `.openspec` directory and any setup / boilerplate / CI designs inside
+   * `docs/spec/` / `docs/adr/` and any setup / boilerplate / CI designs inside
 
-Then present the plan: what is present, what is missing, what is stale. Skip whole sections that exploration already settled rather than re-deciding them mid-execution.
+Then present the plan: what is present, what is missing, what is stale. Skip sections that exploration showed are done.
 
-Where a section below asks a question, lead with the recommended answer so the user can accept it in a word, and give an explainer only where the choice genuinely branches.
+Where a section below asks a question, lead with the recommended answer so the user can accept it in a word, and give an explainer only where the choice informs the setup to do.
 
 ## Initial starter templates
 
@@ -38,7 +69,7 @@ Where a section below asks a question, lead with the recommended answer so the u
 
 ## Mise
 
-* We need mise available. Exploration already established whether it is on `PATH`.
+* We need `mise` available. Exploration established whether it is on `PATH`.
 * If it is not, ask the user whether it can be installed, and how to do so. Options include:
    * User follows https://mise.jdx.dev/getting-started.html themselves
    * Use homebrew to install: `brew install mise`
@@ -49,53 +80,50 @@ Where a section below asks a question, lead with the recommended answer so the u
 
 ### Presence and currency
 
-For each file in this section, check two things, not one:
+Check for each metadata file:
 
-1. **Presence** — does the file exist? If not, create it, starting from the reference and asset named below where the section names one.
-2. **Currency** — does what it says still describe this project? A file that names a task that no longer exists, links to a moved file, or describes an architecture the project has outgrown is worse than no file. Improve it.
+1. **Presence**: does the file exist? If not, create it, starting from the reference and asset named below where the section names one.
+2. **Currency**: does what it says still describe this project? A file that names a task that no longer exists, links to a moved file, or describes an architecture the project has outgrown is worse than no file. Improve it.
 
-Checking presence alone would make this skill one-shot: run it once and it could never help again, however stale the result. That contradicts what the skill is for.
-
-**Two exceptions, presence only:** `LICENSE` and `CODE_OF_CONDUCT.md`. Legal and social text is not the agent's to rewrite — a changed license has consequences no agent can weigh, and a code of conduct is a commitment the humans made. Create them if absent; otherwise leave them exactly as they are, even if they look stale.
+**Two exceptions, presence only:** `LICENSE` and `CODE_OF_CONDUCT.md`. Legal and social text is not the agent's to rewrite. Create them if absent; otherwise leave them exactly as they are.
 
 ### LICENSE
 
-Presence only, per the exception above: if `LICENSE`, `LICENSE.md` or `LICENSE.txt` exists, leave it alone. Otherwise follow [licensing.md](./references/licensing.md).
+If `LICENSE`, `LICENSE.md` or `LICENSE.txt` exists, leave it alone. Otherwise follow [licensing.md](./references/licensing.md).
 
 ### CODE_OF_CONDUCT.md
 
-Presence only, per the exception above: if `CODE_OF_CONDUCT.md` exists, leave it alone. Otherwise follow [code-of-conduct.md](./references/code-of-conduct.md).
+If `CODE_OF_CONDUCT.md` exists, leave it alone. Otherwise follow [code-of-conduct.md](./references/code-of-conduct.md).
 
 ### CONTRIBUTING.md
 
-Follow [contributing.md](./references/contributing.md), adding `CONTRIBUTING.md` if absent and updating it if it no longer matches how the project actually takes contributions.
+Follow [contributing.md](./references/contributing.md).
 
 ### SECURITY.md
 
-Follow [security.md](./references/security.md), adding `SECURITY.md` if absent and updating it if the reporting route it names is no longer the right one.
+Follow [security.md](./references/security.md).
 
 ### Issue tracker
 
-Follow [issue-tracker.md](./references/issue-tracker.md), writing `docs/agents/issue-tracker.md` if absent and updating it if it names the wrong tracker or a label set that no longer matches the remote.
+Follow [issue-tracker.md](./references/issue-tracker.md).
 
 ### AGENTS.md / CLAUDE.md
 
-`AGENTS.md` is the canonical agent configuration and `CLAUDE.md` is a symlink to it, always. Never the other way around.
-
-Note for the user, once, when you create the symlink: git stores symlinks as a mode `120000` blob, and a Windows clone needs `core.symlinks` enabled to get a real link rather than a text file containing the target path.
+`AGENTS.md` is the canonical agent configuration and `CLAUDE.md` is a symlink to it.
 
 #### Symlinking and deduplicating agent files
 
-Convert whatever is there into that shape. Four cases:
+On windows skip this subsection: do not create, convert, merge, delete or write to `CLAUDE.md`, and do not add or edit the canonical header line. Do create `AGENTS.md` if it is missing. Report this in verification as deferred to the human: "agent-file symlinking skipped on windows". (While windows git has some support for symlinks with `core.symlinks`, this can be flaky and we choose here not to bother the user with such details, and avoid the chance an agent writes a non-symlinked `CLAUDE.md`.)
 
-1. **Neither file exists** — create `AGENTS.md` (see below), then `ln -s AGENTS.md CLAUDE.md`.
-2. **`AGENTS.md` only** — `ln -s AGENTS.md CLAUDE.md`.
-3. **`CLAUDE.md` only, and it is a real file** — convert it: `git mv CLAUDE.md AGENTS.md` (this preserves the file's history), then `ln -s AGENTS.md CLAUDE.md`.
-4. **Both exist and `CLAUDE.md` is a real file** — merge in this order: first copy `CLAUDE.md`'s unique content into `AGENTS.md`, then confirm nothing was lost, and only then `rm CLAUDE.md && ln -s AGENTS.md CLAUDE.md`. The destructive step goes last so a failed or partial merge cannot lose content.
+Given these `AGENTS.md` and `CLAUDE.md` cases:
 
-If both exist and `CLAUDE.md` already resolves to `AGENTS.md` (`readlink CLAUDE.md` prints `AGENTS.md`), there is nothing to do.
+1. **Correct**: both files exist and `CLAUDE.md` is a symlink that already resolves to `AGENTS.md` (`readlink CLAUDE.md` prints `AGENTS.md`), so there is nothing to do.
+2. **Neither file exists**: create `AGENTS.md`, then `ln -s AGENTS.md CLAUDE.md`.
+3. **`AGENTS.md` only**: `ln -s AGENTS.md CLAUDE.md`.
+4. **`CLAUDE.md` only, and it is a real file**: convert it: `git mv CLAUDE.md AGENTS.md && ln -s AGENTS.md CLAUDE.md && git add -N CLAUDE.md`.
+5. **Both exist and `CLAUDE.md` is a real file**: merge in this order: first copy `CLAUDE.md`'s unique content into `AGENTS.md`, then confirm nothing was lost, and only then `git rm CLAUDE.md && ln -s AGENTS.md CLAUDE.md && git add -N CLAUDE.md`.
 
-Add this line near the top of `AGENTS.md` if it is not already there, verbatim:
+Then add this line near the top of `AGENTS.md` if it is not already there, verbatim:
 
 > This file (`AGENTS.md`) is the canonical agent configuration. `CLAUDE.md` is a symlink to this file.
 
@@ -130,9 +158,9 @@ Where there is no README, start from [README-template.md](./assets/README-templa
 
 Currency for a README is mostly about whether its description still matches the project. Judge which of these applies:
 
-* Almost no content — improve it based on the template.
-* An established project with a lot of documentation (a fleshed out `docs/`, or many `.md` / `.html` files elsewhere) — update the README from that documentation and link out to it rather than restating it.
-* Little documentation but fleshed out source code — describe what the project is and what it does, based on a high-level review of the source.
+* Almost no content: improve it based on the template.
+* An established project with a lot of documentation (a fleshed out `docs/`, or many `.md` / `.html` files elsewhere): update the README from that documentation and link out to it rather than restating it.
+* Little documentation but fleshed out source code: describe what the project is and what it does, based on a high-level review of the source.
 
 Then check the README's relative links. Fix broken references by finding the right file, and remove references to files that do not exist.
 
@@ -163,22 +191,16 @@ If current test coverage is less than 70%, warn the user that unit test coverage
 
 ## Dependency management
 
-See [dependencies.md](./references/dependencies.md) for instructions.
+Follow [dependencies.md](./references/dependencies.md).
 
 ## Continuous integration
 
-See [ci.md](./references/ci.md) for instructions.
+Follow [ci.md](./references/ci.md).
 
 ## Verification
 
-Verify the work by re-checking the repo, not by recalling what you did. Follow [verification.md](./references/verification.md) — it carries the checks, the three-outcome reporting, and what to do when a check fails.
+Follow [verification.md](./references/verification.md).
 
-Then report, in this order:
+## Session completion
 
-1. The re-check table from `verification.md`: **section | before | after | left to the human**.
-2. The verified / unverified / deferred lists.
-3. Which files the human should expect to hand-edit (the *deferred* list is most of this), and which other skills now consume the files that were written — `docs/agents/issue-tracker.md` feeds the triage and issue skills, `AGENTS.md` feeds every agent session, `.mise.toml` feeds every other skill's commands.
-
-CI truth is post-push: local `mise run ci` passing does not mean the workflow passes. Point the user at `mise run ci-watch`, which every mise template here ships, to watch the first real run.
-
-Finally, confirm with the user whether changes should be committed and pushed. If so, use the `/complete` skill.
+After sharing the verification report, if no changes were made, we're done. Confirm "No changes made" to the user. Otherwise, confirm with the user whether changes should be committed and pushed. If it is available, use the `/complete` skill for this.

@@ -4,6 +4,10 @@
 # dispatches to uv. `pyproject.toml`'s `requires-python` remains
 # authoritative — mise reads it.
 
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
 [tools]
 python = "latest"
 uv = "latest"

@@ -1,5 +1,9 @@
 # mise: https://mise.jdx.dev/
 
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
 [tools]
 bun = "latest"
 
