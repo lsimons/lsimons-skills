@@ -21,7 +21,7 @@ Unless the project does not use worktrees, if you are not in a worktree, do the 
 
 ## Investigation
 
-Break the research question down into independent sub-questions. If you can use subagents, fan out one subagent per sub-question and synthesize their results into the single report.
+If you can dispatch subagents, do the investigation and the report in one subagent, and the verification pass below in a second one. Keep them separate: a verifier that shares the researcher's context inherits its blind spots, and a researcher that can mark its own work will.
 
 Use web searches and web fetches, if those are available, to ground the research in current facts available online.
 
@@ -35,12 +35,14 @@ If the project has a convention for where to put research, use it. Otherwise, sa
 
 ## Verification
 
+Run this pass in its own subagent if you can, separate from the one that did the research. Give it shell and file reads and no edits — enforce that with the tools it gets, not with an instruction in its prompt, because a verifier that can fix things is biased in exactly the way a second subagent is meant to remove. Point it at the report and at the sources the report cites, and have it report back rather than repair.
+
 * Check that the research question stated at the top of the report is actually answered by the report.
 * Check that every substantive claim carries a citation.
 * Check that the cited sources are primary — official docs, source code, specs, first-party APIs — and not secondary write-ups.
 * Check that no source code and no tests were created.
 
-Do not loop or iterate on fixes. If there are significant gaps — a sub-question left unanswered, a claim resting only on a secondary source — record them as open questions in the report rather than papering over them.
+Act on what comes back yourself; do not hand fixes to the verifier. Do not loop or iterate on fixes. If there are significant gaps — a sub-question left unanswered, a claim resting only on a secondary source — record them as open questions in the report rather than papering over them.
 
 Report the findings: a summary of what was learned and what remains open, with a link to the detailed report.
 
