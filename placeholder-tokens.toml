@@ -1,0 +1,17 @@
+# Tokens in skill templates that are *meant* to survive into the file a skill
+# writes, so they are not placeholders to verify against.
+#
+# `scripts/placeholders.py` generates the token lists inlined in skill prose
+# (the `<!-- placeholders: ... -->` blocks) from the templates under a skill's
+# `assets/`. Everything matching `<...>` is a placeholder unless listed here.
+#
+# Keys are template paths relative to `skills/` or `disabled/`, so a skill
+# changing its `enabled` flag does not invalidate them. An entry whose token no
+# longer appears in its template fails the run, like a stale rewrite rule.
+
+[ignore]
+# `mise run <task>` in the usage comment at the top of each mise template.
+"setup/assets/mise-template-go.toml" = ["<task>"]
+"setup/assets/mise-template-py.toml" = ["<task>"]
+"setup/assets/mise-template-rs.toml" = ["<task>"]
+"setup/assets/mise-template-ts.toml" = ["<task>"]

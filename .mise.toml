@@ -71,13 +71,28 @@ run = "uv run python -m scripts.update_skills"
 description = "List every surviving reference to a renamed skill's upstream name (triage worklist)"
 run = "uv run python -m scripts.references"
 
+# The placeholder token lists inlined in skill prose are generated from the
+# skills' own templates, so they can drift when a template changes. Checking is
+# the CI half; `placeholders-fix` is the local half.
+[tasks.placeholders]
+description = "Check the placeholder token lists inlined in skill prose match the templates"
+run = "uv run python -m scripts.placeholders"
+
+[tasks.placeholders-fix]
+description = "Regenerate the placeholder token lists inlined in skill prose"
+run = "uv run python -m scripts.placeholders --apply"
+
 [tasks.lint]
 description = "ruff check + ruff format --check + actionlint"
 run = ["uv run ruff check .", "uv run ruff format --check .", "actionlint"]
 
 [tasks.format]
-description = "ruff format + ruff check --fix"
-run = ["uv run ruff format .", "uv run ruff check --fix ."]
+description = "ruff format + ruff check --fix + regenerate placeholder lists"
+run = [
+  "uv run ruff format .",
+  "uv run ruff check --fix .",
+  "uv run python -m scripts.placeholders --apply",
+]
 
 [tasks.typecheck]
 description = "basedpyright strict"
@@ -89,7 +104,7 @@ run = "uv run pytest"
 
 [tasks.ci]
 description = "Full CI gate"
-depends = ["lint", "typecheck", "test"]
+depends = ["lint", "placeholders", "typecheck", "test"]
 
 # Local mirror of the `zizmor` CI job, using the mise-pinned zizmor. Not
 # part of `ci` because it needs network access and a GitHub token for the

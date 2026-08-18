@@ -34,18 +34,52 @@ These sections, in this order — including the sections that were already done 
 
 They fail differently, so name them differently.
 
-**Syntactic: did I write valid files?** The characteristic failure is an unfilled placeholder. Check it precisely: extract the placeholder tokens the template itself declares, then assert none of them survive in the file that was written.
+**Syntactic: did I write valid files?** The characteristic failure is an unfilled placeholder. Check it precisely: for every file written from a template, assert that none of the tokens that template declares survive in it.
 
-For example, for the README, look for placeholder tokens the template declares:
+The tokens, by template:
 
-```bash
-SKILL_DIR=[skill base directory]
-grep -ohE '<[^>]{1,80}>' ${SKILL_DIR}/assets/README-template.md | sort -u
-# -> <how to use the project> <medium description> <Name> <other sections>
-#    <pointers at docs/> <project> <short description>
+<!-- placeholders: assets/ -->
 ```
+assets/CODE_OF_CONDUCT-template.md
+  <User>
+assets/MIT-LICENSE-template.txt
+  <Copyright>
+assets/PROPRIETARY-LICENSE-template.txt
+  <Copyright>
+assets/README-template.md
+  <how to use the project>
+  <medium description>
+  <Name>
+  <other sections>
+  <pointer to project website / project docs>
+  <pointers at docs/>
+  <project>
+  <See [NOTICE](./NOTICE) for relevant notices.>
+  <short description>
+assets/SECURITY-template.md
+  <User>
+assets/issue-tracker-github.md
+  <color>
+  <description>
+  <label>
+assets/issue-tracker-gitlab.md
+  <color>
+  <label>
+assets/issue-tracker-markdown.md
+  <issue description>
+  <issue status>
+  <issue title>
+  <label-A>
+  <label-B>
+  <references to relevant specs>
+  <short plan description>
+  <slug>
+  <title>
+  <YYYY-MM-DD>
+```
+<!-- /placeholders -->
 
-And then assert each of those is absent from the actual README.md.
+That list is generated from the templates; a template not listed declares no placeholders. If the list is empty, this skill is broken: stop and report it rather than reading no tokens as no placeholders.
 
 A bare `grep '<'` is the wrong check — it false-positives on ordinary prose and on the comments inside the mise templates.
 

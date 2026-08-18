@@ -19,10 +19,12 @@ Every repo task lives in `.mise.toml`; `mise tasks` lists them.
 | `mise install`           | Install the pinned toolchain (one-time)                  |
 | `mise run install`       | `uv sync --all-groups`                                   |
 | `mise run lint`          | `ruff check` + `ruff format --check` + `actionlint`      |
-| `mise run format`        | `ruff format` + `ruff check --fix`                       |
+| `mise run format`        | `ruff format` + `ruff check --fix` + placeholder lists   |
 | `mise run typecheck`     | `basedpyright` (strict)                                  |
 | `mise run test`          | `pytest` with coverage                                   |
-| `mise run ci`            | Full gate: lint + typecheck + test                       |
+| `mise run placeholders`  | Check skills' inlined placeholder token lists            |
+| `mise run placeholders-fix` | Regenerate those lists from the templates             |
+| `mise run ci`            | Full gate: lint + placeholders + typecheck + test        |
 | `mise run audit`         | `zizmor` audit of workflows + dependabot config          |
 | `mise run ci-watch`      | Watch GitHub Actions for the current branch              |
 | `mise run skills-install`| Fetch only the skills that are missing                   |
@@ -44,9 +46,11 @@ docs/agents/              # Conventions an agent needs: issue tracker, labels
 upstream-skills.toml      # Which skills to fetch, what to call them here, and
                           # which frontmatter fields to override
 skill-rewrites.toml       # Cross-reference fixes replayed after each fetch
+placeholder-tokens.toml   # Template tokens that are *not* placeholders
 .mise.toml                # Pinned toolchain + every repo task
 pyproject.toml            # ruff, basedpyright, pytest and coverage config
-.github/workflows/ci.yml  # CI: mise run lint/typecheck/test + zizmor audit
+.github/workflows/ci.yml  # CI: mise run lint/placeholders/typecheck/test
+                          # + zizmor audit
 .github/dependabot.yml    # Weekly uv + github-actions updates, 7-day cooldown
 ```
 
@@ -99,6 +103,37 @@ prefixes: `ao-` (Addy Osmani), `mp-` (Matt Pocock), `s-` (superpowers),
 each skill, installs it under its local name, and rewrites the `name:`
 frontmatter field to match. **Renaming skills is not otherwise a job to do by
 hand — drive it through the workflow below.**
+
+### Placeholder token lists
+
+A skill that writes a file from one of its own templates has to verify no
+placeholder (`<like this>`) survived into what it wrote. It cannot read the
+template at run time: the skill runs in *another* repository, so `.` is that
+project's root and there is no env var pointing at the skill's own directory
+(`CLAUDE_PLUGIN_ROOT` only exists for plugin-packaged skills, and these skills
+are consumed by several agents). Worse, that failure is silent — `grep` errors,
+nothing comes back, and "no placeholders" reads as a pass.
+
+So the token list is inlined in the skill's prose, generated at build time.
+A skill marks the region:
+
+```
+<!-- placeholders: assets/README-template.md -->
+...generated...
+<!-- /placeholders -->
+```
+
+The target is relative to the skill's own directory; ending it in `/` targets a
+directory and groups the output by file. `mise run placeholders` fails on drift
+(that is the CI half) and `mise run placeholders-fix` regenerates (the local
+half, also run by `mise run format`). `scripts/placeholders.py` owns both.
+
+`placeholder-tokens.toml` lists tokens that are *meant* to survive into the
+written file — `<task>` in the mise templates is part of a `mise run <task>`
+usage comment, not a blank to fill in. Everything else matching `<...>` is a
+placeholder. An entry whose token no longer appears in its template fails the
+run, like a stale rewrite rule. Do not add an entry to silence a check: a
+token the agent is supposed to replace belongs in the list it verifies against.
 
 ### Frontmatter overrides
 
