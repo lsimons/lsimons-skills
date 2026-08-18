@@ -45,6 +45,9 @@ jobs:
       - name: Lint
         run: mise run lint
 
+      - name: Placeholders
+        run: mise run placeholders
+
       - name: Typecheck
         run: mise run typecheck
 

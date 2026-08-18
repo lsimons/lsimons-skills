@@ -47,26 +47,32 @@ Analyze and synthesize the implementation and the results into key findings and 
 
 ## Verification
 
-* Check the README.md is complete.
-   * Look for placeholder tokens the template declares:
-      ```
-      <YYYY-MM-DD>
-      <title>
-      <short description>
-      <Testable statement to explore>
-      <Problem we are trying to solve by testing this hypothesis>
-      <How to confirm or reject the hypothesis>
-      <Links to key existing documentation>
-      <Description of how to run implementation commands and tests>
-      <Description of what is built to test the hypothesis>
-      <What happened applying the validation plan to the implementation>
-      <Key takeaways>
-      ```
-   * Assert each of those is absent from the spike README.md.
-   * A bare `grep '<'` is the wrong check.
+* Check the README.md is complete: assert every placeholder token listed below
+  is absent from the spike README.md. A bare `grep '<'` is the wrong check.
 * Check that implementation files are referenced from the README.md.
 * Check that the lessons learned actually follow from the implementation.
 * Check that the hypothesis is confirmed or rejected.
+
+The placeholder tokens [README-template.md](./assets/README-template.md) declares:
+
+<!-- placeholders: assets/README-template.md -->
+```
+<Description of how to run implementation commands and tests>
+<Description of what is built to test the hypothesis>
+<How to confirm or reject the hypothesis>
+<Key takeaways>
+<Links to key existing documentation>
+<Problem we are trying to solve by testing this hypothesis>
+<short description>
+<Testable statement to explore>
+<title>
+<What happened applying the validation plan to the implementation>
+<YYYY-MM-DD>
+```
+<!-- /placeholders -->
+
+That list is generated from the template. If it is empty, this skill is broken:
+stop and report it rather than treating no tokens as no placeholders.
 
 Do not loop or iterate on fixes. If there are significant gaps, add appropriate caveats to the Lessons learned in the spike README.md.
 

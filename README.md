@@ -27,6 +27,7 @@ tests/                 # Tests for scripts/
 docs/agents/           # Conventions an agent needs: issue tracker, labels
 upstream-skills.toml   # Which skills to fetch, and what to call them here
 skill-rewrites.toml    # Cross-reference fixes replayed after each fetch
+placeholder-tokens.toml # Template tokens that are *not* placeholders
 ```
 
 ## Skills
@@ -114,8 +115,10 @@ mise run install      # install project deps
 mise run test         # pytest with coverage
 mise run lint         # ruff check + format --check + actionlint
 mise run typecheck    # basedpyright
-mise run format       # ruff format + --fix
-mise run ci           # full CI gate: lint + typecheck + test
+mise run format       # ruff format + --fix + regenerate placeholder lists
+mise run placeholders # check skills' inlined placeholder token lists
+mise run placeholders-fix  # regenerate them from the templates
+mise run ci           # full CI gate: lint + placeholders + typecheck + test
 mise run audit        # zizmor audit of workflows + dependabot config
 mise run ci-watch     # watch GitHub Actions for the current branch
 ```
