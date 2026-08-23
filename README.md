@@ -165,6 +165,12 @@ Philis content under its own license, which forbids redistribution outside that
 repository, and it bundles commercially licensed TypeType fonts. Point an agent
 at a local sbp-skills checkout if you need it.
 
+`lab271-design` from the private
+[Lab271/labs-branding](https://github.com/Lab271/labs-branding) repository is
+in the same position: proprietary Schuberg Philis brand content bundling the
+same licensed fonts. It is consumed as a gitignored symlink at
+`skills/lab271-design` pointing into a local labs-branding checkout.
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md). Issues are GitHub issues — the
