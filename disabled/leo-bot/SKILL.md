@@ -150,6 +150,7 @@ pack.
 | --- | --- |
 | Don't know what you want yet | `ao-interview-me` |
 | Rough concept, want variants | `ao-idea-refine` |
+| Quality bar not written down as numbers | `ao-constraint-driven-development` |
 | New project, feature, or change, no spec | `ao-spec-driven-development` |
 | Have a spec, need tasks | `ao-planning-and-task-breakdown` |
 | Implementing code | `ao-incremental-implementation` |

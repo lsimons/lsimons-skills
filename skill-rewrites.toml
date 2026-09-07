@@ -46,6 +46,19 @@
   ["`security-and-hardening`", "`ao-security-and-hardening`"],
 ]
 
+["ao-constraint-driven-development"]
+"SKILL.md" = [
+  ["`autonomous-plan-execution`", "`ao-autonomous-plan-execution`"],
+  ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
+  ["`incremental-implementation`", "`ao-incremental-implementation`"],
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+  ["`test-driven-development`", "`ao-test-driven-development`"],
+  ["`ci-cd-and-automation`", "`ao-ci-cd-and-automation`"],
+  ["`shipping-and-launch`", "`ao-shipping-and-launch`"],
+  ["`interview-me`", "`ao-interview-me`"],
+]
+
 ["ao-debugging-and-error-recovery"]
 "SKILL.md" = [
   ["the test-driven-development skill's", "the ao-test-driven-development skill's"],
@@ -204,6 +217,7 @@
 "SKILL.md" = [
   ["observability-and-instrumentation", "ao-observability-and-instrumentation"],
   ["browser-testing-with-devtools", "ao-browser-testing-with-devtools"],
+  ["constraint-driven-development", "ao-constraint-driven-development"],
   ["debugging-and-error-recovery", "ao-debugging-and-error-recovery"],
   ["planning-and-task-breakdown", "ao-planning-and-task-breakdown"],
   ["git-workflow-and-versioning", "ao-git-workflow-and-versioning"],
@@ -281,20 +295,14 @@
   ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
 ]
 
-["mp-diagnosing-bugs"]
-"SKILL.md" = [
-  ["`/improve-codebase-architecture`", "`/mp-improve-codebase-architecture`"],
-]
-
 ["mp-grill-me"]
 "SKILL.md" = [
-  ["`/grilling`", "`/mp-grilling`"],
+  ["with \"grilling\"", "with \"mp-grilling\""],
 ]
 
 ["mp-grill-with-docs"]
 "SKILL.md" = [
-  ["`/domain-modeling`", "`/mp-domain-modeling`"],
-  ["`/grilling`", "`/mp-grilling`"],
+  ["for \"grilling\" and \"domain-modeling\"", "for \"mp-grilling\" and \"mp-domain-modeling\""],
 ]
 
 ["mp-implement"]
@@ -308,11 +316,12 @@
   ["`/codebase-design`", "`/mp-codebase-design`"],
 ]
 "SKILL.md" = [
+  ["with \"codebase-design\"", "with \"mp-codebase-design\""],
+  ["with \"domain-modeling\"", "with \"mp-domain-modeling\""],
+  ["with \"grilling\"", "with \"mp-grilling\""],
   ["`/codebase-design`", "`/mp-codebase-design`"],
-  ["`/domain-modeling`", "`/mp-domain-modeling`"],
   ["/domain-modeling/", "/mp-domain-modeling/"],
   ["`domain-modeling`", "`mp-domain-modeling`"],
-  ["`/grilling`", "`/mp-grilling`"],
 ]
 
 ["mp-prototype"]
@@ -357,7 +366,7 @@
 
 ["mp-tdd"]
 "SKILL.md" = [
-  ["`/codebase-design`", "`/mp-codebase-design`"],
+  ["with \"codebase-design\"", "with \"mp-codebase-design\""],
   ["`code-review`", "`mp-code-review`"],
 ]
 
@@ -378,20 +387,18 @@
 ]
 "SKILL.md" = [
   ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
-  ["`/domain-modeling`", "`/mp-domain-modeling`"],
-  ["`/grilling`", "`/mp-grilling`"],
+  ["for \"grilling\" and \"domain-modeling\"", "for \"mp-grilling\" and \"mp-domain-modeling\""],
   ["`/triage`", "`/mp-triage`"],
 ]
 
 ["mp-wayfinder"]
 "SKILL.md" = [
   ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
-  ["`/domain-modeling`", "`/mp-domain-modeling`"],
-  ["`/grilling`", "`/mp-grilling`"],
+  ["for \"grilling\" and \"domain-modeling\"", "for \"mp-grilling\" and \"mp-domain-modeling\""],
+  ["with \"prototype\"", "with \"mp-prototype\""],
+  ["with \"research\"", "with \"mp-research\""],
   ["`prototype`", "`mp-prototype`"],
-  ["`/research`", "`/mp-research`"],
   ["`grilling`", "`mp-grilling`"],
-  ["/prototype", "/mp-prototype"],
   ["`research`", "`mp-research`"],
 ]
 
@@ -403,11 +410,11 @@
 ["s-brainstorming"]
 "SKILL.md" = [
   ["writing-plans is the next step", "s-writing-plans is the next step"],
-  ["Do NOT invoke frontend-design", "Do NOT invoke an-frontend-design"],
+  ["after brainstorming is writing-plans", "after brainstorming is s-writing-plans"],
+  ["never frontend-design", "never an-frontend-design"],
   ["\"Invoke writing-plans skill\"", "\"Invoke s-writing-plans skill\""],
   ["invoke writing-plans skill", "invoke s-writing-plans skill"],
   ["the writing-plans skill", "the s-writing-plans skill"],
-  ["invoking writing-plans", "invoking s-writing-plans"],
   ["/brainstorming/", "/s-brainstorming/"],
 ]
 

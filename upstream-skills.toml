@@ -111,7 +111,7 @@ repository = "https://github.com/nicosuave/memex"
 prefix = "memex-"
 license = "MIT"
 copyright = "Copyright (c) 2026 Nico Ritschel"
-skills = ["memex-search", "instruction-improver"]
+skills = ["memex-search"]
 
 # Fork of Addy Osmani's agent-skills collection (https://skills.addy.ie),
 # cleaned up with an added skill based on his slash commands.
@@ -127,6 +127,7 @@ skills = [
   "ci-cd-and-automation",
   "code-review-and-quality",
   "code-simplification",
+  "constraint-driven-development",
   "context-engineering",
   "debugging-and-error-recovery",
   "deprecation-and-migration",

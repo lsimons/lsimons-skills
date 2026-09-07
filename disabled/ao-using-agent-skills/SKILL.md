@@ -20,6 +20,7 @@ Task arrives
     ├── Don't know what you want yet? ──────→ ao-interview-me
     ├── Have a rough concept, need variants? → ao-idea-refine
     ├── New project/feature/change? ──→ ao-spec-driven-development
+    ├── No quality bar written down? ──→ ao-constraint-driven-development
     ├── Have a spec, need tasks? ──────→ ao-planning-and-task-breakdown
     ├── Implementing code? ────────────→ ao-incremental-implementation
     │   └── Whole plan, hands-off after one approval? → ao-autonomous-plan-execution
@@ -199,6 +200,7 @@ Not every task needs every skill. A bug fix might only need: `ao-debugging-and-e
 | Define | ao-interview-me | Surface what the user actually wants before any plan, spec, or code exists |
 | Define | ao-idea-refine | Refine ideas through structured divergent and convergent thinking |
 | Define | ao-spec-driven-development | Requirements and acceptance criteria before code |
+| Define | ao-constraint-driven-development | Write the project's quality bar down as numbers, then guard it |
 | Plan | ao-planning-and-task-breakdown | Decompose into small, verifiable tasks |
 | Build | ao-incremental-implementation | Thin vertical slices, test each before expanding |
 | Build | ao-autonomous-plan-execution | Execute the whole plan hands-off after one approval |
