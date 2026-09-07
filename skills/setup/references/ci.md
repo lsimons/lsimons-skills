@@ -4,6 +4,8 @@ Unless the project is completely static or completely local, continuous integrat
 
 CI should run both for every PR / merge request and for every change to main. Both templates below do that in a single configuration file with two triggers.
 
+**Add a third, scheduled trigger when a check can fail without a commit to blame** — link checking against external URLs is the common case, and dependency audits are another. A weekly `schedule:` / `rules: - if: $CI_PIPELINE_SOURCE == "schedule"` means a repository that has been quiet for a month still finds out that a cited source moved. Do not add one where every check is a pure function of the tree; it only spends runner minutes to tell you nothing changed.
+
 If the project has no CI set up yet:
 * If the project is using GitHub, offer the user basic CI using GitHub Actions. Recommend yes; it is one file, and it is what the rest of this skill assumes.
    * Create `.github/workflows/ci.yml` based on template [github-ci-template.yml](../assets/github-ci-template.yml).

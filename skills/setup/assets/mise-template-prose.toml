@@ -1,0 +1,68 @@
+# mise: https://mise.jdx.dev/
+#
+# A prose repository: the product is the markdown, not a site built from it.
+# The quality gates check writing rather than code — style, links and spelling.
+
+[settings]
+minimum_release_age = "7d"
+lockfile = true
+
+[tools]
+markdownlint-cli2 = "latest"
+lychee = "latest"
+typos = "latest"
+
+[tasks.lint]
+description = "Check markdown style (markdownlint-cli2)"
+run = "markdownlint-cli2 '**/*.md'"
+
+[tasks.format]
+description = "Fix markdown style problems that can be fixed automatically"
+run = "markdownlint-cli2 --fix '**/*.md'"
+
+[tasks.links]
+description = "Check every link resolves (lychee), anchors included"
+# --include-fragments checks #anchors too. In a repo whose documents point at
+# each other's sections, a renamed heading is a real defect, and it is the
+# failure that actually happens — external URLs rot far more slowly.
+run = "lychee --config lychee.toml --include-fragments ."
+
+[tasks.spell]
+description = "Check spelling (typos)"
+run = "typos"
+
+[tasks.ci]
+description = "Run every check: style, links, spelling"
+depends = ["lint", "links", "spell"]
+
+[tasks.ci-watch]
+description = "Watch the CI run for HEAD; exits non-zero on failure"
+# Pinned to the CI workflow and to HEAD's SHA. Filtering only by branch picks up
+# whichever run is newest — often dependabot rather than this commit's CI — and
+# would report success for a run that predates the push.
+run = """
+set -eu
+remote_url=$(git remote get-url upstream 2>/dev/null || git remote get-url origin)
+repo=$(echo "$remote_url" | sed -E 's|^.*github\\.com[:/]||; s|\\.git$||')
+sha=$(git rev-parse HEAD)
+
+# GitHub takes a moment to register the run after a push.
+run_id=""
+for _ in $(seq 1 20); do
+  run_id=$(gh run list --repo "$repo" --workflow ci.yml --commit "$sha" \\
+    --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+  # Not `[ -n "$run_id" ] && break`: under `set -e` that aborts the script on
+  # the first empty result, so the retry would never happen.
+  if [ -n "$run_id" ]; then
+    break
+  fi
+  sleep 3
+done
+
+if [ -z "$run_id" ]; then
+  echo "No CI run found for $sha on $repo after 60s. Did the push land?" >&2
+  exit 1
+fi
+
+gh run watch --repo "$repo" --exit-status "$run_id"
+"""

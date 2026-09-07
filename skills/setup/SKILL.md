@@ -47,6 +47,8 @@ Look at:
    * which package manager
    * which test runner.
    * These inform the mise template, the CI template, and the dependabot ecosystems.
+* **Prose-project signals**: `.md` files heavily outnumber source files, documents cross-reference each other by heading anchor, no test framework, no build anyone consumes. If this is what the repo is, follow [prose-projects.md](./references/prose-projects.md) and skip *Unit tests* entirely. Do not mistake it for a documentation *site*, which has a build and dependencies.
+* **How many remotes**: `git remote -v`. More than one genuine push target — a fork that must stay in step, a mirror — needs a `push` task, not a bare `git push`. See [mise.md](./references/mise.md).
 * **Which tools are on `PATH`**:
    * `mise`
    * `zizmor`
@@ -66,6 +68,10 @@ Where a section below asks a question, lead with the recommended answer so the u
 
 * If exploration found the project is close to empty, follow [templates.md](./references/templates.md).
 * If the project is established, done with this section.
+
+## Prose projects
+
+If exploration found the prose-project signals — the product is the markdown, there is no application and no site — follow [prose-projects.md](./references/prose-projects.md). It covers the three quality gates, their configs, the pull-request question, and where the writing rules live. Otherwise skip this section.
 
 ## Mise
 
@@ -129,17 +135,31 @@ Then add this line near the top of `AGENTS.md` if it is not already there, verba
 
 #### Creating or updating agent instructions
 
-* Update `AGENTS.md` for accuracy, clarity, and brevity, removing any duplication.
-* If mise is set up, the `AGENTS.md` should mention the available tasks. List them with `mise tasks`.
-* If a git remote is set up, the `AGENTS.md` should mention what is in use, somewhat like this:
+**`AGENTS.md` earns its place by holding what an agent needs and a human contributor does not.** Anything else belongs in `README.md` (what the project is, the map) or `CONTRIBUTING.md` (the house rules for the work), with `AGENTS.md` linking to it. Two copies of the same rules drift, and the agent file is the copy that stops being read. Before writing, check what `README.md` and `CONTRIBUTING.md` already say and delete the restatements.
+
+Useful prose for an established project, in roughly this order:
+
+1. **The canonical header line**, then one or two sentences on what kind of project this is, pointing at `README.md` and `CONTRIBUTING.md` for the rest. You can repeat the short description from `README.md`, but do not duplicate all of it.
+2. **Overrides.** Where this project contradicts the user's global agent config or the obvious default — no pull requests, `mise run push` instead of `git push`, a non-standard branch name. State it as an override and say why, because an unexplained override reads like an error and gets ignored.
+3. **Constraints that carry real cost if broken.** Confidentiality, files that must not be edited, credentials. Name the case that actually bites rather than the general policy.
+4. **Commands.** The mise tasks that exist — list them with `mise tasks` — with a line on any check whose failure is not self-explanatory, and where each tool's config lives. A config file is where project-specific reality gets recorded, and an agent that does not know it exists will work around a check inline instead.
+5. **Tools and tricks.** The non-obvious commands this project actually uses: how to read its archive format, extract its binary documents, capture its sources, regenerate its outputs, and where scratch work goes. Often the highest-value section, and the one that never gets written, because each item is obvious to whoever discovered it.
+6. **Where things go.** For each kind of artifact, which directory and which indexes must be updated in the same commit. Cheap to write, and it prevents the most common category of agent mistake.
+7. **What is not the agent's call.** The decisions that need the human, and how to hand them over.
+
+Items 5 and 6 do not apply to a fresh project. Leave them out and add them on a later run of this skill, when there is something true to put in them.
+
+#### The `## Agent skills` section
+
+`AGENTS.md` carries a `## Agent skills` section with a fixed set of subsections. **The section and these subsection headings are a convention shared with other tools: keep them, and keep their names.** Adding subsections is fine; renaming, merging or replacing them is not, even when the content would read better folded elsewhere.
+
+* If a git remote is set up:
    ```
    ### Git remote
 
    Use <github with `gh`/gitlab with `glab`/plain git commands>.
    ```
-   * Add this subsection to an existing `## Agent skills` section, or create that section if it doesn't exist.
-* You can repeat the short description from `README.md` in the agent file, but avoid duplicating all of README.md in the agent file.
-* If issue tracking is set up, the `AGENTS.md` should summarize the setup and reference the details, somewhat like this:
+* If issue tracking is set up:
    ```
    ### Issue tracker
 
@@ -149,8 +169,8 @@ Then add this line near the top of `AGENTS.md` if it is not already there, verba
 
    Use needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/issue-tracker.md`.
    ```
-   * Add these subsections to an existing `## Agent skills` section, or create that section if it doesn't exist.
-* Avoid duplicating or conflicting content in the agents file, instead edit it for consistency and brevity.
+
+Add each subsection to the existing `## Agent skills` section, or create that section if it doesn't exist. Where a subsection needs project detail — two push targets, a label that means something specific here — put it in the subsection rather than in a new section of your own.
 
 ### README.md
 
