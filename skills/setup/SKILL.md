@@ -1,7 +1,6 @@
 ---
 name: setup
 description: create or improve project scaffolding and boilerplate, setting up metadata files including readme and license, basic agent instructions, dependency management and CI/CD, based on templates
-model: opus
 ---
 
 Bring the scaffolding and boilerplate for this project up to a high standard. The outcome should be a project that is easy to work with for both humans and agents, with clear instructions and useful checks and quality gates.
