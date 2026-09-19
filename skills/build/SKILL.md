@@ -2,7 +2,6 @@
 name: build
 description: execute a task, solve an issue, fix a bug
 argument-hint: [issue or details]
-model: sonnet
 ---
 
 Your task is to do the work requested, working autonomously, completing the work without asking questions. If you cannot continue without asking a question, say so in a clear message and then stop.

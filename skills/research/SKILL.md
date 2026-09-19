@@ -2,7 +2,6 @@
 name: research
 description: investigate a topic to enable decision-making, searching the web for details, reading documentation, following references, producing a markdown report
 argument-hint: [issue or details]
-model: opus
 ---
 
 Your task is to gather all relevant detail from primary sources, analyze it, and produce a report as a new markdown file in this repo. Do not create new source code or new tests.

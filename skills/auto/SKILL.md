@@ -3,7 +3,6 @@ name: auto
 description: Choose skill based on what the user wants to do.
 argument-hint: [intent]
 disable-model-invocation: true
-model: sonnet
 ---
 
 # Auto

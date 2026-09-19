@@ -1,7 +1,6 @@
 ---
 name: complete
 description: drive a task to completion, handling quality gates, commits, pull requests, merge requests, worktree cleanup
-model: sonnet
 ---
 
 # Complete

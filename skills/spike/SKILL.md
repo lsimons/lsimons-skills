@@ -2,7 +2,6 @@
 name: spike
 description: try an approach in code to enable decision-making, creating throwaway code, prototyping, testing an approach, answering a question by trying to implement a quick answer
 argument-hint: [issue or details]
-model: sonnet
 ---
 
 Your task is to create a prototype or some throwaway code to test a particular approach or hypothesis or to answer a particular question, exploring a design, answering a question quickly so that a decision on the full implementation can be made.
