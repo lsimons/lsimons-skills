@@ -62,7 +62,6 @@ build = true
 bump = true
 complete = true
 flow = true
-python-knowledge-patch = true
 research = true
 review = true
 setup = true
