@@ -112,6 +112,19 @@ license = "MIT"
 copyright = "Copyright (c) 2026 Nico Ritschel"
 skills = ["memex-search"]
 
+# The LikeC4 DSL reference, published by the LikeC4 project for agents that
+# write `.c4`/`.likec4` architecture models. `likec4-dsl` already carries the
+# prefix and keeps its name.
+[[source]]
+repository = "https://github.com/likec4/likec4"
+prefix = "likec4-"
+license = "MIT"
+copyright = "Copyright (c) 2023-2026 Denis Davydkov"
+skills = ["likec4-dsl"]
+
+[source.enabled]
+likec4-dsl = true
+
 # Fork of Addy Osmani's agent-skills collection (https://skills.addy.ie),
 # cleaned up with an added skill based on his slash commands.
 [[source]]

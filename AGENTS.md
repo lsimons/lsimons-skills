@@ -97,7 +97,7 @@ declares a `prefix` and every skill from it is vendored under that prefix
 (`interview-me` becomes `ao-interview-me`). A name that already carries the
 prefix keeps it, so `sbp-*` and `memex-search` are untouched. Current
 prefixes: `ao-` (Addy Osmani), `mp-` (Matt Pocock), `s-` (superpowers),
-`sbp-` (Schuberg Philis), `memex-`, `vercel-`, `an-` (Anthropic).
+`sbp-` (Schuberg Philis), `memex-`, `likec4-`, `vercel-`, `an-` (Anthropic).
 
 `mise run skills-update` handles the mechanical half by itself: it fetches
 each skill, installs it under its local name, and rewrites the `name:`
