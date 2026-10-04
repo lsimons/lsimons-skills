@@ -75,6 +75,7 @@ declares a prefix, and every skill it provides is vendored under it:
 | `s-` | superpowers |
 | `sbp-` | Schuberg Philis |
 | `memex-` | memex CLI |
+| `likec4-` | LikeC4 |
 | `vercel-` | vercel-labs |
 | `an-` | Anthropic |
 
@@ -149,6 +150,7 @@ them.
 | `mp-*` | [lsimons/pocock-skills](https://github.com/lsimons/pocock-skills) | Copyright (c) 2026 Matt Pocock |
 | `s-*` | [lsimons/superpowers](https://github.com/lsimons/superpowers) | Copyright (c) 2025 Jesse Vincent |
 | `memex-*` | [nicosuave/memex](https://github.com/nicosuave/memex) | Copyright (c) 2026 Nico Ritschel |
+| `likec4-*` | [likec4/likec4](https://github.com/likec4/likec4) | Copyright (c) 2023-2026 Denis Davydkov |
 | `vercel-find-skills`, `vercel-web-design-guidelines` | [vercel-labs](https://github.com/vercel-labs) | Copyright (c) 2026 Vercel, Inc. |
 | `claude-history` | hand-maintained here | Copyright (c) 2024 Raine |
 | `python-knowledge-patch` | hand-maintained here | Copyright (c) 2026 Nevaberry |
