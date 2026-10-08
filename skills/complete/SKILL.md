@@ -5,6 +5,8 @@ description: drive a task to completion, handling quality gates, commits, pull r
 
 # Complete
 
+If `docs/agents/complete.md` exists in the project, read it and follow its instructions instead of the rest of this file: that project has written its own completion process. Otherwise, follow the instructions below.
+
 Drive an engineering task to done: quality gates pass, everything is committed, it's pushed, and CI is green. The user is hands-off, so no stopping to ask "should I commit now?" or "should I push?".
 
 If the user did not specify it yet, before starting work, ask the user what completed work means:
