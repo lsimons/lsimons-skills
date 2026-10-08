@@ -80,6 +80,8 @@ directory to match its `enabled` state every run; never `mv` one by hand.
 `auto` is the enabled router: it dispatches by intent to the phase skills
 (`setup`, `research`, `spike`, `spec`, `build`, `review`, `complete`, `flow`,
 `triage`, `bump`), which is why `upstream-skills.toml` declares them as a set.
+`spec`, `review`, `flow`, `triage` and `bump` are still stubs, so they are
+disabled: enabled, they would shadow a project's own skill of the same name.
 `leo-bot` is the older cross-pack router — OpenSpec first when the repo has an
 `openspec/` directory, then `sbp-*` for mission-critical work, then exactly
 one of `mp-*` / `ao-*` / `s-*`. It is currently disabled. When a vendored
