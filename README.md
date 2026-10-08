@@ -43,7 +43,9 @@ skills live at `skills/<name>`, everything else at `disabled/<name>`, and
 
 `auto` is the router: it dispatches by intent to the phase skills — `setup`,
 `research`, `spike`, `spec`, `build`, `review`, `complete`, `flow`, `triage`,
-`bump`. `complete` is the finishing move once code changes exist: quality
+`bump`. `spec`, `review`, `flow`, `triage` and `bump` are still stubs and stay
+disabled so they do not shadow a project's own skill of the same name.
+`complete` is the finishing move once code changes exist: quality
 gates, commit, push, and CI verification via `gh`, `glab`, or plain `git`
 depending on the remote. `leo-bot` is an older cross-pack router over the
 vendored packs, currently disabled.

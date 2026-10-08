@@ -55,19 +55,22 @@ local = [
   "triage",
 ]
 
+# `bump`, `flow`, `review`, `spec` and `triage` are still stubs — frontmatter
+# only. Enabled, they would shadow a project's own skill of the same name, so
+# they stay disabled until they have content.
 [local-enabled]
 1password = true
 auto = true
 build = true
-bump = true
+bump = false
 complete = true
-flow = true
+flow = false
 research = true
-review = true
+review = false
 setup = true
-spec = true
+spec = false
 spike = true
-triage = true
+triage = false
 
 [[source]]
 repository = "https://github.com/vercel-labs/skills"
