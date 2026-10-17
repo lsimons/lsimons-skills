@@ -121,8 +121,11 @@ Keep the grilling, spec, and tickets in one unbroken context window.
 | Turn the conversation into a spec | `mp-to-spec` |
 | Split a spec into tracer-bullet tickets | `mp-to-tickets` |
 | Build a ticket or spec | `mp-implement` |
+| Build a whole spec's tickets in one orchestrated run | `mp-implement-spec` |
 | Build one behaviour test-first | `mp-tdd` |
 | Review a branch or PR against a fixed point | `mp-code-review` |
+| Write a PR body | `mp-pr` |
+| Look back on a session, improve the agent's environment | `mp-retro` |
 | A hard, intermittent, or crept-in bug | `mp-diagnosing-bugs` |
 | Incoming bugs and requests to sort | `mp-triage` |
 | An effort too big for one session to hold | `mp-wayfinder` |
@@ -132,7 +135,6 @@ Keep the grilling, spec, and tickets in one unbroken context window.
 | Survey the codebase for deepening opportunities | `mp-improve-codebase-architecture` |
 | Pin down domain terminology, record an ADR | `mp-domain-modeling` |
 | Carry work to a new harness, directory, or colleague | `mp-handoff` |
-| Resolve an in-progress merge/rebase conflict | `mp-resolving-merge-conflicts` |
 | Steps only a human can do (credentials, dashboards) | `mp-wizard` |
 | Ask someone else the questions you can't answer | `mp-to-questionnaire` |
 | That last message didn't land | `mp-wait-what` |
@@ -207,8 +209,8 @@ Two exceptions to "stay in one pack":
   skill for that step and return to your lane afterwards. Don't average the two
   bars; pick the one the system actually needs.
 - **Skills with no equivalent elsewhere** are fair game from any lane, because
-  there's nothing to conflict with: `mp-wizard`, `mp-resolving-merge-conflicts`,
-  `mp-writing-for-agents`, `s-writing-skills`, `s-using-git-worktrees`,
+  there's nothing to conflict with: `mp-wizard`, `mp-writing-for-agents`,
+  `s-writing-skills`, `s-using-git-worktrees`,
   `ao-frontend-ui-engineering`, `ao-browser-testing-with-devtools`,
   `ao-performance-optimization`, `ao-ci-cd-and-automation`.
 
