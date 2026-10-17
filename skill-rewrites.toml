@@ -183,6 +183,7 @@
 
 ["ao-shipping-and-launch"]
 "SKILL.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
   ["`code-review-and-quality`", "`ao-code-review-and-quality`"],
   ["`security-and-hardening`", "`ao-security-and-hardening`"],
 ]
@@ -206,12 +207,18 @@
   ["`security-and-hardening`", "`ao-security-and-hardening`"],
 ]
 
+["ao-source-driven-development"]
+"SKILL.md" = [
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
+
 ["ao-spec-driven-development"]
 "SKILL.md" = [
   ["`planning-and-task-breakdown`", "`ao-planning-and-task-breakdown`"],
   ["/incremental-implementation/", "/ao-incremental-implementation/"],
   ["`incremental-implementation`", "`ao-incremental-implementation`"],
   ["`autonomous-plan-execution`", "`ao-autonomous-plan-execution`"],
+  ["`api-and-interface-design`", "`ao-api-and-interface-design`"],
   ["/test-driven-development/", "/ao-test-driven-development/"],
   ["`test-driven-development`", "`ao-test-driven-development`"],
   ["/context-engineering/", "/ao-context-engineering/"],
@@ -352,12 +359,6 @@
   ["`pr` does not depend", "`mp-pr` does not depend"],
 ]
 
-["mp-prototype"]
-"UI.md" = [
-  ["/prototype/", "/mp-prototype/"],
-  ["`prototype`", "`mp-prototype`"],
-]
-
 ["mp-retro"]
 "SKILL.md" = [
   ["`writing-for-agents`", "`mp-writing-for-agents`"],
@@ -378,23 +379,14 @@
 ]
 "issue-tracker-github.md" = [
   ["`/wayfinder`", "`/mp-wayfinder`"],
-  ["`prototype`", "`mp-prototype`"],
-  ["`grilling`", "`mp-grilling`"],
-  ["`research`", "`mp-research`"],
   ["`/triage`", "`/mp-triage`"],
 ]
 "issue-tracker-gitlab.md" = [
   ["`/wayfinder`", "`/mp-wayfinder`"],
-  ["`prototype`", "`mp-prototype`"],
-  ["`grilling`", "`mp-grilling`"],
-  ["`research`", "`mp-research`"],
   ["`/triage`", "`/mp-triage`"],
 ]
 "issue-tracker-local.md" = [
   ["`/wayfinder`", "`/mp-wayfinder`"],
-  ["`prototype`", "`mp-prototype`"],
-  ["`grilling`", "`mp-grilling`"],
-  ["`research`", "`mp-research`"],
 ]
 
 ["mp-tdd"]
@@ -435,9 +427,6 @@
   ["for \"grilling\" and \"domain-modeling\"", "for \"mp-grilling\" and \"mp-domain-modeling\""],
   ["with \"prototype\"", "with \"mp-prototype\""],
   ["with \"research\"", "with \"mp-research\""],
-  ["`prototype`", "`mp-prototype`"],
-  ["`grilling`", "`mp-grilling`"],
-  ["`research`", "`mp-research`"],
 ]
 
 ["mp-writing-for-agents"]
@@ -528,6 +517,7 @@
 ]
 "testing-skills-with-subagents.md" = [
   ["superpowers:test-driven-development", "s-test-driven-development"],
+  ["(in writing-skills directory)", "(in s-writing-skills directory)"],
 ]
 
 ["sbp-mcaf-module"]
