@@ -36,6 +36,7 @@
 
 ["ao-code-review-and-quality"]
 "SKILL.md" = [
+  ["`constraint-driven-development`", "`ao-constraint-driven-development`"],
   ["`performance-optimization`", "`ao-performance-optimization`"],
   ["`security-and-hardening`", "`ao-security-and-hardening`"],
 ]
@@ -97,6 +98,8 @@
 
 ["ao-idea-refine"]
 "SKILL.md" = [
+  ["`spec-driven-development`", "`ao-spec-driven-development`"],
+  ["`interview-me`", "`ao-interview-me`"],
   ["/idea-refine/", "/ao-idea-refine/"],
 ]
 
@@ -144,6 +147,9 @@
 "SKILL.md" = [
   ["`browser-testing-with-devtools`", "`ao-browser-testing-with-devtools`"],
 ]
+"references/optimization-patterns.md" = [
+  ["`performance-optimization`", "`ao-performance-optimization`"],
+]
 "references/performance-checklist.md" = [
   ["`performance-optimization`", "`ao-performance-optimization`"],
 ]
@@ -164,6 +170,13 @@
 ]
 
 ["ao-security-and-hardening"]
+"SKILL.md" = [
+  ["`observability-and-instrumentation`", "`ao-observability-and-instrumentation`"],
+  ["`debugging-and-error-recovery`", "`ao-debugging-and-error-recovery`"],
+]
+"references/hardening-patterns.md" = [
+  ["`security-and-hardening`", "`ao-security-and-hardening`"],
+]
 "references/security-checklist.md" = [
   ["`security-and-hardening`", "`ao-security-and-hardening`"],
 ]
@@ -261,7 +274,6 @@
 ]
 "SKILL.md" = [
   ["`/improve-codebase-architecture`", "`/mp-improve-codebase-architecture`"],
-  ["`/resolving-merge-conflicts`", "`/mp-resolving-merge-conflicts`"],
   ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
   ["`/writing-for-agents`", "`/mp-writing-for-agents`"],
   ["`/to-questionnaire`", "`/mp-to-questionnaire`"],
@@ -269,6 +281,7 @@
   ["`/diagnosing-bugs`", "`/mp-diagnosing-bugs`"],
   ["`/domain-modeling`", "`/mp-domain-modeling`"],
   ["`/grill-with-docs`", "`/mp-grill-with-docs`"],
+  ["`/implement-spec`", "`/mp-implement-spec`"],
   ["`grill-with-docs`", "`mp-grill-with-docs`"],
   ["`/code-review`", "`/mp-code-review`"],
   ["`mcaf-module`", "`sbp-mcaf-module`"],
@@ -286,8 +299,10 @@
   ["`/to-spec`", "`/mp-to-spec`"],
   ["`/triage`", "`/mp-triage`"],
   ["`/wizard`", "`/mp-wizard`"],
+  ["`/retro`", "`/mp-retro`"],
   ["`/teach`", "`/mp-teach`"],
   ["`/tdd`", "`/mp-tdd`"],
+  ["`/pr`", "`/mp-pr`"],
 ]
 
 ["mp-code-review"]
@@ -307,8 +322,16 @@
 
 ["mp-implement"]
 "SKILL.md" = [
-  ["/code-review", "/mp-code-review"],
-  ["/tdd", "/mp-tdd"],
+  ["with \"code-review\"", "with \"mp-code-review\""],
+  ["with \"tdd\"", "with \"mp-tdd\""],
+]
+
+["mp-implement-spec"]
+"SKILL.md" = [
+  ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
+  ["/to-spec and /to-tickets", "/mp-to-spec and /mp-to-tickets"],
+  ["with `code-review`", "with `mp-code-review`"],
+  ["with `tdd`", "with `mp-tdd`"],
 ]
 
 ["mp-improve-codebase-architecture"]
@@ -324,10 +347,20 @@
   ["`domain-modeling`", "`mp-domain-modeling`"],
 ]
 
+["mp-pr"]
+"CREDITS.md" = [
+  ["`pr` does not depend", "`mp-pr` does not depend"],
+]
+
 ["mp-prototype"]
 "UI.md" = [
   ["/prototype/", "/mp-prototype/"],
   ["`prototype`", "`mp-prototype`"],
+]
+
+["mp-retro"]
+"SKILL.md" = [
+  ["`writing-for-agents`", "`mp-writing-for-agents`"],
 ]
 
 ["mp-setup-matt-pocock-skills"]
@@ -370,6 +403,11 @@
   ["`code-review`", "`mp-code-review`"],
 ]
 
+["mp-teach"]
+"SKILL.md" = [
+  ["`/teach`", "`/mp-teach`"],
+]
+
 ["mp-to-spec"]
 "SKILL.md" = [
   ["`/setup-matt-pocock-skills`", "`/mp-setup-matt-pocock-skills`"],
@@ -409,21 +447,20 @@
 
 ["s-brainstorming"]
 "SKILL.md" = [
-  ["writing-plans is the next step", "s-writing-plans is the next step"],
-  ["after brainstorming is writing-plans", "after brainstorming is s-writing-plans"],
-  ["never frontend-design", "never an-frontend-design"],
-  ["\"Invoke writing-plans skill\"", "\"Invoke s-writing-plans skill\""],
-  ["invoke writing-plans skill", "invoke s-writing-plans skill"],
-  ["the writing-plans skill", "the s-writing-plans skill"],
-  ["/brainstorming/", "/s-brainstorming/"],
+  ["superpowers:writing-plans", "s-writing-plans"],
 ]
 
 ["s-executing-plans"]
 "SKILL.md" = [
+  ["superpowers:verification-before-completion", "s-verification-before-completion"],
   ["superpowers:finishing-a-development-branch", "s-finishing-a-development-branch"],
-  ["the finishing-a-development-branch skill", "the s-finishing-a-development-branch skill"],
   ["superpowers:subagent-driven-development", "s-subagent-driven-development"],
+  ["superpowers:test-driven-development", "s-test-driven-development"],
+  ["superpowers:requesting-code-review", "s-requesting-code-review"],
+  ["superpowers:systematic-debugging", "s-systematic-debugging"],
   ["superpowers:using-git-worktrees", "s-using-git-worktrees"],
+  ["superpowers:writing-plans", "s-writing-plans"],
+  ["Code wrong? systematic-debugging", "Code wrong? s-systematic-debugging"],
   ["the executing-plans skill", "the s-executing-plans skill"],
 ]
 
@@ -481,7 +518,6 @@
   ["superpowers:using-git-worktrees", "s-using-git-worktrees"],
   ["superpowers:executing-plans", "s-executing-plans"],
   ["the writing-plans skill", "the s-writing-plans skill"],
-  ["using executing-plans", "using s-executing-plans"],
 ]
 
 ["s-writing-skills"]
