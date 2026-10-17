@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import NamedTuple
 
 from scripts.manifest import SkillEntry, load_manifest
-from scripts.paths import SKILLS_DIR
+from scripts.paths import DISABLED_DIR, SKILLS_DIR
 
 # Skill text lives in markdown; scripts and assets are not prose to triage.
 SCANNED_SUFFIXES = (".md",)
@@ -48,9 +48,13 @@ def _word_pattern(name: str) -> re.Pattern[str]:
 
 def scan_references(
     entries: list[SkillEntry],
-    skills_dir: Path = SKILLS_DIR,
+    roots: tuple[Path, ...] = (SKILLS_DIR, DISABLED_DIR),
 ) -> list[Reference]:
     """Return every mention of a renamed skill's upstream name, in path order.
+
+    Both `skills/` and `disabled/` are scanned: rewrite rules are replayed on
+    every fetched skill whether it is enabled or not, so a reference in a
+    disabled skill needs triage just the same.
 
     A skill's own directory is scanned too: upstream frequently refers to
     its own skills by name, and those references need renaming as well.
@@ -62,7 +66,8 @@ def scan_references(
     patterns = {name: _word_pattern(name) for name in renamed}
 
     found: list[Reference] = []
-    for path in sorted(skills_dir.rglob("*")):
+    paths = sorted(path for root in roots for path in root.rglob("*"))
+    for path in paths:
         if not path.is_file() or path.suffix not in SCANNED_SUFFIXES:
             continue
         for lineno, line in enumerate(path.read_text(errors="replace").splitlines(), start=1):
