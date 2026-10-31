@@ -54,8 +54,8 @@ AGENT_BROWSER_SKILL = "agent-browser"
 # mise covers `[tools]`, but neither sees these. Bump them deliberately,
 # keeping to the 7-day-old floor that `minimum_release_age` applies to
 # mise tools, and read the resulting `skills/` diff.
-SKILLS_CLI_VERSION = "1.5.22"
-AGENT_BROWSER_VERSION = "0.33.2"
+SKILLS_CLI_VERSION = "1.7.4"
+AGENT_BROWSER_VERSION = "0.39.2"
 
 # How many example lines to print per renamed skill in the reference report.
 REPORT_SAMPLE = 3
