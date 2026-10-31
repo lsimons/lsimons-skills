@@ -3,7 +3,7 @@ name = "lsimons-skills"
 version = "0.1.0"
 description = "A collection of agent skills"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.15"
 dependencies = []
 authors = [
     { name = "lsimons" }
@@ -11,7 +11,7 @@ authors = [
 
 [tool.ruff]
 line-length = 100
-target-version = "py314"
+target-version = "py315"
 # skills/ and disabled/ are vendored upstream content. ruff formats Python
 # code blocks inside markdown, so without this it rewrites other people's
 # skills — which makes `skills-update` produce spurious diffs and `lint` fail
@@ -22,7 +22,7 @@ exclude = ["skills", "disabled"]
 select = ["E", "F", "I", "W", "UP", "B", "SIM"]
 
 [tool.basedpyright]
-pythonVersion = "3.14"
+pythonVersion = "3.15"
 typeCheckingMode = "strict"
 include = ["scripts", "tests"]
 exclude = [".venv/**", "**/__pycache__/**"]
