@@ -26,6 +26,7 @@ Every repo task lives in `.mise.toml`; `mise tasks` lists them.
 | `mise run placeholders-fix` | Regenerate those lists from the templates             |
 | `mise run ci`            | Full gate: lint + placeholders + typecheck + test        |
 | `mise run audit`         | `zizmor` audit of workflows + dependabot config          |
+| `mise run vuln`          | `osv-scanner` scan of every committed lockfile           |
 | `mise run ci-watch`      | Watch GitHub Actions for the current branch              |
 | `mise run skills-install`| Fetch only the skills that are missing                   |
 | `mise run skills-update` | Re-fetch every skill, replay rewrites, prune strays      |
@@ -33,6 +34,11 @@ Every repo task lives in `.mise.toml`; `mise tasks` lists them.
 
 `audit` is not part of `ci` because it needs network access and a GitHub
 token; the workflow's `zizmor` job covers it on every push and PR.
+`vuln` stays out of `ci` for the same network reason (it needs no token);
+the workflow's `vuln` job runs it. It scans `uv.lock` only, which is dev
+tooling: the npm CLIs `skills-update` runs via `npx` (`skills`,
+`agent-browser`, pinned in `scripts/update_skills.py`) are in no lockfile
+and go unscanned.
 
 ## Structure
 
@@ -49,7 +55,7 @@ skill-rewrites.toml       # Cross-reference fixes replayed after each fetch
 placeholder-tokens.toml   # Template tokens that are *not* placeholders
 .mise.toml                # Pinned toolchain + every repo task
 pyproject.toml            # ruff, basedpyright, pytest and coverage config
-.github/workflows/ci.yml  # CI: mise run lint/placeholders/typecheck/test
+.github/workflows/ci.yml  # CI: mise run lint/placeholders/typecheck/test/vuln
                           # + zizmor audit
 .github/dependabot.yml    # Weekly uv + github-actions updates, 7-day cooldown
 ```

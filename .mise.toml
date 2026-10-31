@@ -51,6 +51,27 @@ shellcheck = "0.11.0"
 # CI never runs skills-update, but `mise-action` installs everything under
 # [tools], so this costs one cached node download per run.
 node = "26.12.1"
+# Used by `mise run vuln`. Unlike zizmor there is no second version to
+# keep in step: the CI job runs `mise run vuln` through mise-action, so
+# this pin is the single source of truth for local and CI alike.
+#
+# The SLSA signer is declared here because the aqua registry entry for
+# google/osv-scanner carries no signer identity, so without these options
+# mise 2026.10.x skips SLSA verification and refuses to re-lock (it would
+# drop the `provenance.slsa` entries from mise.lock). The
+# `slsa_signer_identity` / `slsa_signer_issuer` aqua tool options were added
+# in mise 2026.10.0 for https://github.com/jdx/mise/issues/13850.
+#
+# The identity is the slsa-github-generator generic generator workflow that
+# google/osv-scanner's .github/workflows/goreleaser.yml calls, at the tag
+# that workflow pins (v2.1.0 as of osv-scanner v2.7.0). When osv-scanner
+# moves to a new generator tag, `mise lock` fails loudly with "lock-time
+# provenance verification failed": re-check goreleaser.yml at the new
+# release tag and update the identity here, rather than dropping it.
+#
+# `auto git-mise-upgrade` may not bump inline-table pins like this one yet
+# (a separate lsimons-auto change is in progress), so bump it by hand.
+osv-scanner = { version = "2.7.0", slsa_signer_identity = "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v2.1.0", slsa_signer_issuer = "https://token.actions.githubusercontent.com" }
 
 [env]
 _.file = { path = ".env", optional = true }
@@ -134,6 +155,63 @@ fi
 export GH_TOKEN
 zizmor --strict-collection .
 """
+
+# Scans `uv.lock` against the OSV database. Kept out of `ci` for the same
+# reason as `audit`: it needs network access, and `ci` is meant to stay
+# runnable offline. CI enforces it in its own job instead.
+#
+# Unlike `audit` this needs no token and fails loudly when the database
+# is unreachable, so there is no silent-downgrade case to guard against.
+#
+# What this does NOT cover: `uv.lock` is dev tooling only (ruff, pytest,
+# basedpyright, ...). The npm CLIs that `mise run skills-update` runs —
+# `skills` and `agent-browser`, pinned in `scripts/update_skills.py` — are
+# fetched with `npm install -g` / `npx` at run time and appear in no
+# lockfile, so osv-scanner never sees them. A clean result here says
+# nothing about those two packages or their transitive dependencies.
+#
+# No `--lockfile`: the directory scan finds `uv.lock` while respecting
+# `.gitignore`, which keeps the 300 MB `.venv` out. The vendored `skills/`
+# and `disabled/` trees contain no lockfiles today, so there is nothing to
+# exclude; if a fetched skill ever ships one, decide deliberately whether
+# third-party content belongs in this gate.
+#
+# `-r` is load-bearing, and its absence is silent: `osv-scanner scan
+# source` is NOT recursive by default, so without it the walk stops at
+# the top level. Harmless while the only lockfile sits at the root, but
+# a lockfile added in a subdirectory would go unscanned with nothing
+# saying so.
+#
+# Because that failure mode is silent, the scan is not trusted on its
+# own: the loop below re-derives the lockfile list from git and fails if
+# the scanner did not report opening every one. Adding a second package
+# manager then gets a red run rather than a quietly narrower scan — add
+# its lockfile to the glob list when you add it.
+[tasks.vuln]
+description = "osv-scanner audit of every committed lockfile against the OSV database"
+run = '''
+set -eu
+status=0
+out=$(osv-scanner scan source -r . 2>&1) || status=$?
+echo "$out"
+
+missing=0
+for lock in $(git ls-files -- '*uv.lock' '*requirements*.txt' '*package-lock.json' '*bun.lock' '*pnpm-lock.yaml'); do
+  case "$out" in
+    *"/$lock file and found"*) ;;
+    *)
+      echo "osv-scanner never opened $lock — its dependencies went unscanned." >&2
+      missing=1
+      ;;
+  esac
+done
+if [ "$missing" -ne 0 ]; then
+  echo "Every committed lockfile must be scanned. Check that osv-scanner" >&2
+  echo "supports its format, and that the -r flag is still present." >&2
+  exit 1
+fi
+exit "$status"
+'''
 
 [tasks.ci-watch]
 description = "Watch GitHub Actions CI for the current branch; exits non-zero on failure"
