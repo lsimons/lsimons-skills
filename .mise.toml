@@ -15,14 +15,16 @@ lockfile = true
 # to review than a per-dependency judgement about which upstreams are
 # trustworthy enough to float.
 #
-# The cost is that nothing here is covered by dependabot, so these go
-# stale silently. Refresh them deliberately with `mise up`, and read the
-# diff.
+# Renovate's mise manager keeps these pins and mise.lock current, with
+# the same 7-day minimumReleaseAge as everything else it proposes; read
+# its PR diff like any other. `mise up` still works for a manual refresh.
 [tools]
 python = "3.15.2"
 uv = "0.13.6"
 # Used by `mise run audit`; must match `version:` in the workflow's
-# zizmor job. Bump them together.
+# zizmor job. Renovate bumps both with the same 7-day wait (the preset
+# looks the input up on zizmor's GitHub releases), so they land in the
+# same PR.
 zizmor = "1.31.1"
 # Used by `mise run lint`. actionlint shells out to shellcheck for the
 # `run:` blocks in workflows, and silently skips that half if shellcheck
@@ -69,8 +71,10 @@ node = "26.13.0"
 # provenance verification failed": re-check goreleaser.yml at the new
 # release tag and update the identity here, rather than dropping it.
 #
-# `auto git-mise-upgrade` may not bump inline-table pins like this one yet
-# (a separate lsimons-auto change is in progress), so bump it by hand.
+# Renovate bumps the version in this inline table and re-runs `mise lock`.
+# The signer identity stays manual: when a new release changes generator
+# tag, that `mise lock` fails and Renovate's PR shows an artifact error;
+# update the identity here by hand.
 osv-scanner = { version = "2.7.0", slsa_signer_identity = "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v2.1.0", slsa_signer_issuer = "https://token.actions.githubusercontent.com" }
 
 [env]
@@ -137,13 +141,14 @@ depends = ["lint", "placeholders", "typecheck", "test"]
 # a weaker check than the name promises.
 #
 # No `--collect`: the default collects every input kind — workflows,
-# actions, dependabot and pre-commit configs — while respecting
+# actions, dependabot and pre-commit configs (this repo has only
+# workflows; renovate.json is not a zizmor input) — while respecting
 # `.gitignore`. `--collect=all` is the same set of kinds with
 # `.gitignore` ignored, which drags the 300 MB `.venv` in, plus the
 # vendored `skills/` and `disabled/` trees. Naming kinds explicitly
 # would be strictly narrower than the default.
 [tasks.audit]
-description = "zizmor audit of GitHub Actions workflows + dependabot config"
+description = "zizmor audit of GitHub Actions workflows"
 run = """
 set -e
 GH_TOKEN=$(gh auth token 2>/dev/null) || true

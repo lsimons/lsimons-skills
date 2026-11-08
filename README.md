@@ -122,7 +122,7 @@ mise run format       # ruff format + --fix + regenerate placeholder lists
 mise run placeholders # check skills' inlined placeholder token lists
 mise run placeholders-fix  # regenerate them from the templates
 mise run ci           # full CI gate: lint + placeholders + typecheck + test
-mise run audit        # zizmor audit of workflows + dependabot config
+mise run audit        # zizmor audit of workflows
 mise run vuln         # osv-scanner scan of every committed lockfile
 mise run ci-watch     # watch GitHub Actions for the current branch
 ```

@@ -30,8 +30,8 @@ ready-for-human    Requires human implementation                      #e6e6fa
 wontfix            This will not be worked on                         #ffffff
 ```
 
-Three more labels are applied by dependabot, not by hand:
-`dependencies`, `github_actions`, `python:uv`.
+`dependencies` is applied by Renovate, not by hand. `github_actions` and
+`python:uv` are left over from Dependabot and are no longer applied.
 
 ## Triage flow
 
