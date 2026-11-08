@@ -25,7 +25,7 @@ Every repo task lives in `.mise.toml`; `mise tasks` lists them.
 | `mise run placeholders`  | Check skills' inlined placeholder token lists            |
 | `mise run placeholders-fix` | Regenerate those lists from the templates             |
 | `mise run ci`            | Full gate: lint + placeholders + typecheck + test        |
-| `mise run audit`         | `zizmor` audit of workflows + dependabot config          |
+| `mise run audit`         | `zizmor` audit of workflows                              |
 | `mise run vuln`          | `osv-scanner` scan of every committed lockfile           |
 | `mise run ci-watch`      | Watch GitHub Actions for the current branch              |
 | `mise run skills-install`| Fetch only the skills that are missing                   |
@@ -57,7 +57,7 @@ placeholder-tokens.toml   # Template tokens that are *not* placeholders
 pyproject.toml            # ruff, basedpyright, pytest and coverage config
 .github/workflows/ci.yml  # CI: mise run lint/placeholders/typecheck/test/vuln
                           # + zizmor audit
-.github/dependabot.yml    # Weekly uv + github-actions updates, 7-day cooldown
+renovate.json             # Renovate opt-in: shared lsimons/.github preset
 ```
 
 There is no installable Python package (`tool.uv.package = false`) —
@@ -278,17 +278,21 @@ See [`SECURITY.md`](./SECURITY.md).
 - GitHub Actions are pinned to full-length commit SHAs with a `# vX.Y.Z`
   comment, and `zizmor` enforces that in CI.
 - Every tool in `.mise.toml` is pinned to an exact version, python and
-  node included. Nothing here is covered by dependabot, so refresh it
-  deliberately with `mise up` and read the diff.
+  node included. Renovate (`renovate.json`, extending the shared preset
+  in lsimons/.github) keeps them, `mise.lock`, `pyproject.toml`/`uv.lock`
+  and the action pins current; read its PR diffs. `requires-python` and
+  the osv-scanner SLSA signer identity stay manual.
 - The two npm packages `skills-update` installs — the skills.sh CLI and
   `agent-browser` — are pinned in `scripts/update_skills.py`
   (`SKILLS_CLI_VERSION`, `AGENT_BROWSER_VERSION`), and installed with
-  `--ignore-scripts`. Neither dependabot nor mise sees them; bump them by
-  hand, keeping to the same 7-day-old floor `minimum_release_age` applies
-  to mise tools. Node is pinned so the `npm` doing the installing is
-  pinned too.
+  `--ignore-scripts`. Renovate does not see them (no manager reads a
+  Python constant, and a bump is only half done until `skills-update`
+  re-fetches the vendored tree); bump them by hand, keeping to the same
+  7-day-old floor `minimum_release_age` applies to mise tools. Node is
+  pinned so the `npm` doing the installing is pinned too.
 - The `zizmor` version in `.mise.toml` and the `version:` in the
-  workflow's zizmor job must match; bump them together.
+  workflow's zizmor job must match. Renovate bumps each side, not
+  necessarily in the same PR, so check the pair when reviewing.
 - Vendoring skills makes their licensing this repository's problem —
   see "Licensing" above.
 

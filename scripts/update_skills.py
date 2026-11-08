@@ -50,10 +50,11 @@ AGENT_BROWSER_SKILL = "agent-browser"
 # vendored `skills/` tree. Pinning does not authenticate a release, but it
 # fixes *which* one runs, and every fetch lands as a reviewable git diff.
 #
-# Nothing refreshes these: dependabot covers uv and GitHub Actions, and
-# mise covers `[tools]`, but neither sees these. Bump them deliberately,
-# keeping to the 7-day-old floor that `minimum_release_age` applies to
-# mise tools, and read the resulting `skills/` diff.
+# Nothing refreshes these: Renovate covers uv, GitHub Actions and the
+# `.mise.toml` `[tools]`, but has no manager for these constants. Bump
+# them deliberately, keeping to the 7-day-old floor that
+# `minimum_release_age` applies to mise tools, run `skills-update`, and
+# read the resulting `skills/` diff.
 SKILLS_CLI_VERSION = "1.7.4"
 AGENT_BROWSER_VERSION = "0.41.0"
 
