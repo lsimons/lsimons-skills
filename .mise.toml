@@ -20,7 +20,7 @@ lockfile = true
 # its PR diff like any other. `mise up` still works for a manual refresh.
 [tools]
 python = "3.15.2"
-uv = "0.13.7"
+uv = "0.13.8"
 # Used by `mise run audit`; must match `version:` in the workflow's
 # zizmor job. Renovate bumps both with the same 7-day wait (the preset
 # looks the input up on zizmor's GitHub releases), so they land in the
@@ -52,7 +52,7 @@ shellcheck = "0.11.0"
 #
 # CI never runs skills-update, but `mise-action` installs everything under
 # [tools], so this costs one cached node download per run.
-node = "26.13.0"
+node = "26.13.1"
 # Used by `mise run vuln`. Unlike zizmor there is no second version to
 # keep in step: the CI job runs `mise run vuln` through mise-action, so
 # this pin is the single source of truth for local and CI alike.
